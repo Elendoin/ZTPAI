@@ -1,10 +1,7 @@
 package Controllers;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import Models.User;
 
 import java.util.ArrayList;
@@ -39,14 +36,24 @@ public class SecurityController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/api/users/{id}")
+    public ResponseEntity<?> getUser(@PathVariable Long id){
+        for(User user : users){
+            if(user.getId().equals(id)){
+                return ResponseEntity.ok(user);
+            }
+        }
+        return ResponseEntity.status(404).body("User not found!");
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request){
         for(User user : users){
             if(request.email.equals(user.getEmail()) && request.password.equals(user.getPassword())){
-                return ResponseEntity.ok("Logged in successfully" + user.getId());
+                return ResponseEntity.ok("Logged in successfully!" + user.getId());
             }
         }
-        return ResponseEntity.status(401).build();
+        return ResponseEntity.status(401).body("Login failed!");
 
     }
 
@@ -63,5 +70,14 @@ public class SecurityController {
         return ResponseEntity.ok("User successfully registered!" + user.getId());
     }
 
-
+    @DeleteMapping("/api/users/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id){
+        for(User user : users){
+            if(user.getId().equals(id)){
+                users.remove(user);
+                return ResponseEntity.ok("User successfully deleted! ID: " + user.getId());
+            }
+        }
+        return ResponseEntity.status(404).body("User not found!");
+    }
 }
