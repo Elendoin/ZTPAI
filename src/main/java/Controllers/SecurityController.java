@@ -11,11 +11,6 @@ import java.util.List;
 public class SecurityController {
     private static final List<User> users = new ArrayList<User>();
 
-    static {
-        users.add(new User(1L, "John", "Test", "johntest@gmail.com", "123"));
-        users.add(new User(2L, "John", "Frog", "johnfrog@gmail.com", "123"));
-    }
-
     static class LoginRequest {
         public String email;
         public String password;
@@ -65,7 +60,7 @@ public class SecurityController {
             }
         }
 
-        User user = new User(users.size()+1L, request.username, request.surname, request.email, request.password);
+        User user = new User(users.size()+1L, request.email, request.password);
         users.add(user);
         return ResponseEntity.ok("User successfully registered!" + user.getId());
     }
