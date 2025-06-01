@@ -71,6 +71,44 @@ input{
     height: 0.5em;
 }
 
+/* Improved styles for form inputs and messages */
+.register-input {
+    margin-bottom: 1em !important;
+}
+
+.login-button:disabled,
+.register-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #666;
+}
+
+.login-button:disabled:hover,
+.register-button:disabled:hover {
+    background: #666;
+    border: 1px solid #666;
+}
+
+.message-success {
+    color: green;
+    background-color: #e8f5e8;
+    border: 1px solid green;
+    padding: 0.75em;
+    border-radius: 4px;
+    margin-bottom: 1em;
+    text-align: center;
+}
+
+.message-error {
+    color: red;
+    background-color: #ffebee;
+    border: 1px solid red;
+    padding: 0.75em;
+    border-radius: 4px;
+    margin-bottom: 1em;
+    text-align: center;
+}
+
 a{
     font-family: Arial;
 }
