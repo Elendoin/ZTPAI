@@ -1,24 +1,16 @@
-package Models;
+package DTOs;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "user_details")
-public class UserDetailsEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class UserDTO {
     private Long id;
-
-    @Column(nullable = false)
+    private String email;
     private String name;
-    
-    @Column(nullable = false)
     private String surname;
 
-    public UserDetailsEntity() {}
+    public UserDTO() {}
 
-    public UserDetailsEntity(String name, String surname) {
+    public UserDTO(Long id, String email, String name, String surname) {
+        this.id = id;
+        this.email = email;
         this.name = name;
         this.surname = surname;
     }
@@ -29,6 +21,14 @@ public class UserDetailsEntity {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getName() {
