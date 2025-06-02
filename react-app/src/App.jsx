@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Login from './Login.jsx';
 import Register from './Register.jsx';
 import Dashboard from './Dashboard.jsx';
+import UsersList from './UsersList.jsx';
+import UserDetail from './UserDetail.jsx';
 
 function App() {
     return (
@@ -11,6 +13,8 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/users" element={<UsersList />} />
+                <Route path="/users/:id" element={<UserDetail />} />
             </Routes>
         </Router>
     );

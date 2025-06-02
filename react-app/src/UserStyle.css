@@ -1,0 +1,144 @@
+/* User Management Shared Styles */
+
+/* Header with logout button */
+.user-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2em;
+}
+
+.user-title {
+    text-align: center;
+    font-size: 2em;
+    margin: 0;
+}
+
+.user-logout-button {
+    margin-left: auto;
+}
+
+/* Loading state */
+.user-loading {
+    text-align: center;
+    font-size: 1.5em;
+}
+
+/* Error message styling */
+.user-error {
+    color: red;
+    margin-bottom: 1em;
+    text-align: center;
+    padding: 0.5em;
+    border: 1px solid red;
+    border-radius: 4px;
+    background-color: #ffebee;
+}
+
+/* Empty state message */
+.user-empty-message {
+    text-align: center;
+    margin: 2em 0;
+}
+
+/* User card/item styling */
+.user-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 1em;
+    margin-bottom: 1em;
+    background-color: #f9f9f9;
+}
+
+.user-detail-card {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 1.5em;
+    margin-bottom: 1em;
+    background-color: #f9f9f9;
+}
+
+/* User list specific styling */
+.user-list-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.user-item-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-info {
+    /* Container for user information */
+}
+
+.user-id {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.user-email {
+    /* Default styling, inherits from login-text */
+}
+
+/* Action buttons container */
+.user-actions {
+    display: flex;
+    gap: 0.5em;
+}
+
+.user-action-button {
+    padding: 0.5em 1em;
+}
+
+.user-delete-button {
+    padding: 0.5em 1em;
+    background-color: #dc3545;
+}
+
+/* User detail specific styling */
+.user-detail-section-title {
+    font-size: 1.3em;
+    margin-bottom: 1em;
+    text-align: center;
+}
+
+.user-detail-field {
+    margin-bottom: 0.5em;
+}
+
+/* Navigation/Footer buttons */
+.user-navigation {
+    text-align: center;
+    margin-top: 2em;
+}
+
+.user-navigation-buttons {
+    display: flex;
+    gap: 1em;
+    justify-content: center;
+}
+
+.user-navigation-button {
+    /* Uses existing button classes, no additional styling needed */
+}
+
+/* Flex utilities for user management */
+.user-flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.user-flex-gap {
+    display: flex;
+    gap: 1em;
+}

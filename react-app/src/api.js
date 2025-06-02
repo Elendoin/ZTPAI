@@ -44,6 +44,35 @@ export const authAPI = {
       return response.data;
     } catch (error) {
       throw error.response?.data || { message: 'Status check failed' };
+    }  },
+};
+
+// User API functions
+export const userAPI = {
+  getAllUsers: async () => {
+    try {
+      const response = await api.get('/users');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to fetch users' };
+    }
+  },
+
+  getUserById: async (id) => {
+    try {
+      const response = await api.get(`/users/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to fetch user' };
+    }
+  },
+
+  deleteUser: async (id) => {
+    try {
+      const response = await api.delete(`/users/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to delete user' };
     }
   },
 };

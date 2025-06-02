@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { authAPI } from './api.js';
 import './LoginStyle.css';
 
@@ -65,9 +65,7 @@ function Dashboard() {
                                 User ID: {user.userId || 'N/A'}
                             </p>
                         )}
-                    </div>
-
-                    <div style={{ marginBottom: '2em' }}>
+                    </div>                    <div style={{ marginBottom: '2em' }}>
                         <p className="login-text" style={{ marginBottom: '1em' }}>
                             🎯 Ready to play some pop culture trivia?
                         </p>
@@ -76,8 +74,21 @@ function Dashboard() {
                         </p>
                     </div>
 
+                    <div style={{ marginBottom: '2em' }}>
+                        <h3 className="login-text" style={{ fontSize: '1.3em', marginBottom: '1em' }}>
+                            👥 User Management
+                        </h3>
+                        <div style={{ display: 'flex', gap: '1em', justifyContent: 'center', flexWrap: 'wrap' }}>
+                            <Link to="/users">
+                                <button className="login-button" style={{ margin: '0.5em' }}>
+                                    View All Users
+                                </button>
+                            </Link>
+                        </div>
+                    </div>
+
                     <button 
-                        className="login-button" 
+                        className="register-button" 
                         onClick={handleLogout}
                         style={{ marginTop: '1em' }}
                     >
