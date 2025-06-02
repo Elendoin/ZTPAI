@@ -43,9 +43,7 @@ function DailyQuiz() {
         } finally {
             setLoading(false);
         }
-    };
-
-    const fetchTodaysQuestion = async () => {
+    };    const fetchTodaysQuestion = async () => {
         try {
             const response = await fetch('/api/questions/today');
             if (response.ok) {
@@ -57,31 +55,75 @@ function DailyQuiz() {
         } catch (error) {
             console.error('Error fetching today\'s question:', error);
         }
-    };
-
-    const checkUserAnswerStatus = async (userId) => {
+    };    const fetchTodaysQuestionWithAnswer = async () => {
+        try {
+            const response = await fetch('/api/questions/today/with-answer');
+            if (response.ok) {
+                const questionData = await response.json();
+                setQuestion(questionData);
+                // Don't set selectedAnswer here - we just want to show the correct answer highlighted
+            } else {
+                console.error('No question found for today');
+            }
+        } catch (error) {
+            console.error('Error fetching today\'s question with answer:', error);
+        }
+    };const checkUserAnswerStatus = async (userId) => {
         try {
             // Get user stats to check last_answered date
             const response = await fetch(`/api/users/${userId}`);
             if (response.ok) {
                 const userData = await response.json();
                 if (userData.userStats) {
-                    setUserStats(userData.userStats);
-                    
-                    // Check if last_answered is today
-                    const today = new Date().toISOString().split('T')[0];
+                    setUserStats(userData.userStats);                    // Check if last_answered is today
+                    // Use local date instead of UTC to match server timezone
+                    const today = new Date();
+                    const todayLocal = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
                     const lastAnswered = userData.userStats.lastAnswered;
                     
-                    if (lastAnswered === today) {
+                    console.log('Debug - Today (Local):', todayLocal);
+                    console.log('Debug - Last answered (from API):', lastAnswered);
+                    
+                    // Convert lastAnswered from DD-MM-YYYY to YYYY-MM-DD format for comparison
+                    let isToday = false;
+                    if (lastAnswered) {
+                        if (lastAnswered.includes('-')) {
+                            // Check if it's in DD-MM-YYYY format or YYYY-MM-DD format
+                            const parts = lastAnswered.split('-');
+                            if (parts[0].length === 2) {
+                                // DD-MM-YYYY format, convert to YYYY-MM-DD
+                                const convertedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                                console.log('Debug - Converted date:', convertedDate);
+                                isToday = convertedDate === todayLocal;
+                            } else {
+                                // Already in YYYY-MM-DD format
+                                isToday = lastAnswered === todayLocal;
+                            }
+                        }
+                    }
+                    
+                    console.log('Debug - Final comparison result:', isToday);
+                    
+                    if (isToday) {
                         setHasAnsweredToday(true);
                         setShowResult(true);
+                        // If user has already answered, we need to show the correct answer
+                        // We'll fetch it separately since the regular endpoint doesn't include it
+                        await fetchTodaysQuestionWithAnswer();
+                          // Check their previous answer status using answered-today endpoint
+                        const answerResponse = await fetch(`/api/users/${userId}/answered-today`);
+                        if (answerResponse.ok) {
+                            const answerData = await answerResponse.json();
+                            // We can't determine if they were correct from just the hasAnsweredToday flag
+                            // But we can show them they already answered and show the correct answer
+                        }
                     }
                 }
             }
         } catch (error) {
             console.error('Error checking user answer status:', error);
         }
-    };    const handleAnswerSelect = async (optionNumber) => {
+    };const handleAnswerSelect = async (optionNumber) => {
         if (hasAnsweredToday || !question) return;
 
         setSelectedAnswer(optionNumber);
@@ -156,10 +198,34 @@ function DailyQuiz() {
             localStorage.removeItem('user');
             navigate('/login');
         }
+    };    const toggleStats = () => {
+        setShowStats(!showStats);
     };
 
-    const toggleStats = () => {
-        setShowStats(!showStats);
+    // Helper function to determine button class
+    const getButtonClass = (optionLetter, optionNumber) => {
+        if (!showResult) {
+            return ''; // No special class if no result to show
+        }
+        
+        // If the user has already answered today (returning visitor)
+        if (hasAnsweredToday && !selectedAnswer) {
+            // Only highlight the correct answer
+            return question.correctAnswer === optionLetter ? 'correct' : '';
+        }
+        
+        // If the user just answered (fresh answer)
+        if (selectedAnswer) {
+            if (selectedAnswer === optionNumber) {
+                // This is the button they clicked
+                return isCorrect ? 'correct' : 'incorrect';
+            } else if (question.correctAnswer === optionLetter) {
+                // Show the correct answer even if they got it wrong
+                return 'correct';
+            }
+        }
+        
+        return '';
     };
 
     if (loading) {
@@ -198,60 +264,65 @@ function DailyQuiz() {
                     {question ? (
                         <>
                             <img src="/img/text_logo.svg" alt="Question" />
-                            <p>{question.contents}</p>
-                            <form className="quizOptions" data-correct={question.correctAnswer}>
-                                <button 
+                            <p>{question.contents}</p>                            <form className="quizOptions" data-correct={question.correctAnswer}>                                <button 
                                     type="button"
                                     onClick={() => handleAnswerSelect(1)}
                                     disabled={hasAnsweredToday}
-                                    className={showResult && selectedAnswer === 1 ? (isCorrect ? 'correct' : 'incorrect') : ''}
+                                    className={getButtonClass('A', 1)}
                                     data-option="1"
                                 >
                                     <b>A: </b>
                                     {question.optionA}
-                                </button>
-                                <button 
+                                </button>                                <button 
                                     type="button"
                                     onClick={() => handleAnswerSelect(2)}
                                     disabled={hasAnsweredToday}
-                                    className={showResult && selectedAnswer === 2 ? (isCorrect ? 'correct' : 'incorrect') : ''}
+                                    className={getButtonClass('B', 2)}
                                     data-option="2"
                                 >
                                     <b>B: </b>
                                     {question.optionB}
-                                </button>
-                                <button 
+                                </button>                                <button 
                                     type="button"
                                     onClick={() => handleAnswerSelect(3)}
                                     disabled={hasAnsweredToday}
-                                    className={showResult && selectedAnswer === 3 ? (isCorrect ? 'correct' : 'incorrect') : ''}
+                                    className={getButtonClass('C', 3)}
                                     data-option="3"
                                 >
                                     <b>C: </b>
                                     {question.optionC}
-                                </button>
-                                <button 
+                                </button>                                <button 
                                     type="button"
                                     onClick={() => handleAnswerSelect(4)}
                                     disabled={hasAnsweredToday}
-                                    className={showResult && selectedAnswer === 4 ? (isCorrect ? 'correct' : 'incorrect') : ''}
+                                    className={getButtonClass('D', 4)}
                                     data-option="4"
                                 >
                                     <b>D: </b>
                                     {question.optionD}
                                 </button>
                             </form>
-                            
-                            {showResult && (
+                              {showResult && (
                                 <div className="result-message">
-                                    {isCorrect ? 
-                                        <p style={{ color: 'green', fontSize: '1.2em', fontWeight: 'bold' }}>✅ Correct!</p> : 
-                                        <p style={{ color: 'red', fontSize: '1.2em', fontWeight: 'bold' }}>❌ Incorrect!</p>
-                                    }
-                                    {hasAnsweredToday && (
-                                        <p style={{ color: 'white', fontSize: '0.9em' }}>
-                                            Come back tomorrow for the next question!
-                                        </p>
+                                    {hasAnsweredToday ? (
+                                        <>
+                                            <p style={{ color: 'orange', fontSize: '1.2em', fontWeight: 'bold' }}>
+                                                📅 You have already answered today's question!
+                                            </p>
+                                            <p style={{ color: 'white', fontSize: '1em' }}>
+                                                The correct answer was: <span style={{ color: 'green', fontWeight: 'bold' }}>{question.correctAnswer}</span>
+                                            </p>
+                                            <p style={{ color: 'white', fontSize: '0.9em' }}>
+                                                Come back tomorrow for the next question!
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            {isCorrect ? 
+                                                <p style={{ color: 'green', fontSize: '1.2em', fontWeight: 'bold' }}>✅ Correct!</p> : 
+                                                <p style={{ color: 'red', fontSize: '1.2em', fontWeight: 'bold' }}>❌ Incorrect!</p>
+                                            }
+                                        </>
                                     )}
                                 </div>
                             )}

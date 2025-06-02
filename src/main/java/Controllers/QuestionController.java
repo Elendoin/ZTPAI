@@ -31,12 +31,18 @@ public class QuestionController {
         Optional<QuestionDTO> question = questionService.getQuestionByIdWithoutAnswer(id);
         return question.map(ResponseEntity::ok)
                       .orElse(ResponseEntity.notFound().build());
-    }
-
-    // Get today's question
+    }    // Get today's question
     @GetMapping("/today")
     public ResponseEntity<QuestionDTO> getTodaysQuestion() {
         Optional<QuestionDTO> question = questionService.getTodaysQuestion();
+        return question.map(ResponseEntity::ok)
+                      .orElse(ResponseEntity.notFound().build());
+    }
+
+    // Get today's question with correct answer (for users who have already answered)
+    @GetMapping("/today/with-answer")
+    public ResponseEntity<QuestionDTO> getTodaysQuestionWithAnswer() {
+        Optional<QuestionDTO> question = questionService.getTodaysQuestionWithAnswer();
         return question.map(ResponseEntity::ok)
                       .orElse(ResponseEntity.notFound().build());
     }

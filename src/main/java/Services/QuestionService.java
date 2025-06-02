@@ -37,11 +37,14 @@ public class QuestionService {
     public Optional<QuestionDTO> getQuestionByIdWithoutAnswer(Long id) {
         return questionRepository.findById(id)
                 .map(this::convertToDTOWithoutAnswer);
-    }
-
-    public Optional<QuestionDTO> getTodaysQuestion() {
+    }    public Optional<QuestionDTO> getTodaysQuestion() {
         return questionRepository.findByDateExact(LocalDate.now())
                 .map(this::convertToDTOWithoutAnswer);
+    }
+
+    public Optional<QuestionDTO> getTodaysQuestionWithAnswer() {
+        return questionRepository.findByDateExact(LocalDate.now())
+                .map(this::convertToDTO);
     }
 
     public Optional<QuestionDTO> getQuestionByDate(LocalDate date) {
