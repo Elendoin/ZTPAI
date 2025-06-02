@@ -1,0 +1,262 @@
+body {
+    margin: 0;
+}
+
+.browse-container {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    color: white;
+    font-family: Arial;
+    font-style: normal;
+    margin: 0;
+    padding: 0;
+}
+
+nav {
+    height: 10%;
+    width: 99%;
+    display: flex;
+    justify-content: center;
+    padding-top: 1vh;
+    border-bottom: solid 1px gray;
+}
+
+.left-nav-content {
+    height: 100%;
+    width: 45%;
+    display: flex;
+    justify-content: left;
+}
+
+.left-nav-content > i {
+    font-size: 2.8em;
+    margin-left: 5%;
+    align-self: center;
+}
+
+.left-nav-content > a > i {
+    font-size: 2.8em;
+    margin-left: 5%;
+}
+
+.left-nav-content > a {
+    margin-left: 5%;
+    color: white;
+    align-self: center;
+}
+
+.left-nav-content > a:hover {
+    color: grey;
+}
+
+.left-nav-content > i:hover {
+    color: grey;
+    cursor: pointer;
+}
+
+.logo {
+    filter: invert(100%) sepia(0%) saturate(7488%) hue-rotate(208deg) brightness(98%) contrast(98%);
+    height: 90%;
+    width: 10%;
+    display: flex;
+    justify-content: center;
+}
+
+.right-nav-content {
+    height: 50%;
+    width: 45%;
+    display: flex;
+    justify-content: right;
+    align-items: baseline;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.popup {
+    display: none;
+    padding-left: 20px;
+    padding-right: 15px;
+    align-items: center;
+    justify-content: center;
+}
+
+.right-nav-content > i {
+    font-size: 2.8em;
+    margin-right: 5%;
+    margin-left: 5%;
+}
+
+.right-nav-content > i:hover {
+    cursor: pointer;
+    color: grey;
+}
+
+.logout-button {
+    color: white;
+    background: #000000;
+    border: 1px solid #FFFFFF;
+    border-radius: 100px;
+    padding: 8px 16px;
+}
+
+.logout-button:hover {
+    cursor: pointer;
+    background-color: white;
+    color: black;
+}
+
+.logout-text {
+    padding-right: 10px;
+}
+
+header {
+    height: 6%;
+    width: 100%;
+    text-align: center;
+    align-items: center;
+    font-size: 2em;
+    padding-top: 0.3em;
+}
+
+main {
+    height: 82vh;
+    width: 100%;
+    align-items: flex-end;
+}
+
+.browse-end {
+    height: 72%;
+    max-height: 80%;
+    display: flex;
+    align-items: flex-end;
+    margin: 3%;
+}
+
+.dailyQuiz {
+    height: 100%;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    margin: 0;
+}
+
+.dailyQuiz > img {
+    max-height: 30%;
+    max-width: 50%;
+}
+
+.dailyQuiz > p {
+    width: 70%;
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center;
+}
+
+.quizOptions {
+    width: 100%;
+    height: 40%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: end;
+    justify-content: center;
+    gap: 1em;
+}
+
+.quizOptions > button {
+    width: 50%;
+    height: 60%;
+    justify-self: center;
+    color: white;
+    background: #000000;
+    border: 1px solid #FFFFFF;
+    border-radius: 100px;
+    padding: 1em;
+    font-size: 1em;
+    text-align: left;
+}
+
+.quizOptions > button:hover:not(:disabled) {
+    background-color: #FFFFFF;
+    color: black;
+    cursor: pointer;
+}
+
+.quizOptions > button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.quizOptions > button.correct {
+    background-color: #27ae60;
+    border-color: #27ae60;
+}
+
+.quizOptions > button.incorrect {
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.result-message {
+    margin-top: 1em;
+    text-align: center;
+}
+
+.stats {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 250px;
+    border: 1px solid white;
+    color: white;
+    background: #4b4746;
+    font-family: Arial;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.stats > b {
+    margin-bottom: 1em;
+    font-size: 1.2em;
+}
+
+.stats > p {
+    margin: 0.5em 0;
+    font-size: 1em;
+}
+
+/* Hide stats by default */
+.stats {
+    display: none;
+}
+
+/* Show stats when active */
+.stats.show {
+    display: flex;
+}
+
+/* Profile button popup functionality */
+#profile-button {
+    cursor: pointer;
+}
+
+#profile-button:hover + .popup,
+.popup:hover {
+    display: flex !important;
+}

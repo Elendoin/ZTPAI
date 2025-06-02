@@ -6,6 +6,7 @@ import Models.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.time.LocalDate;
 
 @Service
 public class UserService {
@@ -27,5 +28,42 @@ public class UserService {
             throw new Exception("User not found");
         }
         userRepository.delete(user);
+    }
+
+    public User updateUserStats(long userId, boolean isCorrect) throws Exception {
+        User user = userRepository.findById(userId);
+        if (user == null) {
+            throw new Exception("User not found");
+        }
+
+        UserStats stats = user.getUserStats();
+        if (stats == null) {
+            stats = new UserStats();
+            user.setUserStats(stats);
+        }
+
+        // Update stats based on correct/incorrect answer
+        if (isCorrect) {
+            stats.setWins(stats.getWins() + 1);
+        } else {
+            stats.setLosses(stats.getLosses() + 1);
+        }
+
+        // Set last answered to today
+        stats.setLastAnswered(LocalDate.now());
+
+        return userRepository.save(user);
+    }
+
+    public boolean hasUserAnsweredToday(long userId) {
+        User user = userRepository.findById(userId);
+        if (user == null || user.getUserStats() == null) {
+            return false;
+        }
+
+        LocalDate today = LocalDate.now();
+        LocalDate lastAnswered = user.getUserStats().getLastAnswered();
+        
+        return lastAnswered != null && lastAnswered.equals(today);
     }
 }

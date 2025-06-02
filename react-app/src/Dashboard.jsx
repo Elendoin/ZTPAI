@@ -85,14 +85,16 @@ function Dashboard() {
                                 </p>
                             </>
                         )}
-                    </div><div style={{ marginBottom: '2em' }}>
+                    </div>                    <div style={{ marginBottom: '2em' }}>
                         <p className="login-text" style={{ marginBottom: '1em' }}>
                             🎯 Ready to play some pop culture trivia?
                         </p>
-                        <p className="login-text" style={{ fontSize: '0.9em', color: '#666' }}>
-                            This is where your game dashboard will be implemented.
-                        </p>
-                    </div>                    <div style={{ marginBottom: '2em' }}>
+                        <Link to="/daily-quiz">
+                            <button className="login-button" style={{ margin: '0.5em', fontSize: '1.2em' }}>
+                                🎮 Play Today's Question
+                            </button>
+                        </Link>
+                    </div><div style={{ marginBottom: '2em' }}>
                         <h3 className="login-text" style={{ fontSize: '1.3em', marginBottom: '1em' }}>
                             👥 User Management
                         </h3>
