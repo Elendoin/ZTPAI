@@ -69,11 +69,18 @@ function Login() {
 
     return (
         <div className="container">
-            <div className="login-container">
-                <form className="login" onSubmit={handleSubmit}>
-                    <h2 className="login-text" style={{ textAlign: 'center', fontSize: '2em', marginBottom: '1em' }}>
-                        Login
-                    </h2>
+            <div className="login-container">                <form className="login" onSubmit={handleSubmit}>
+                    <div className="logo-container" style={{ textAlign: 'center', marginBottom: '1.5em' }}>
+                        <img 
+                            src="/img/text_logo.svg" 
+                            alt="Popdle Logo" 
+                            style={{ 
+                                height: '80px', 
+                                width: 'auto',
+                                maxWidth: '300px'
+                            }} 
+                        />
+                    </div>
 
                     {message && (
                         <div style={{ 
