@@ -1,6 +1,7 @@
 package Controllers;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import Models.User;
 import Services.UserService;
@@ -31,9 +32,8 @@ public class UserController {
             return ResponseEntity.status(404).body("User not found!");
         }
         return ResponseEntity.ok(user);
-    }
-
-    @DeleteMapping("/{id}")
+    }    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable Long id){
         try {
             userService.deleteUser(id);

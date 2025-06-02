@@ -41,15 +41,20 @@ function Login() {
             setError('Email and password are required');
             setLoading(false);
             return;
-        }
-
-        try {
+        }        try {
             const response = await authAPI.login({
                 email: formData.email,
                 password: formData.password
             });
 
             if (response.success) {
+                // Store user data in localStorage for role-based access
+                localStorage.setItem('user', JSON.stringify({
+                    userId: response.userId,
+                    email: response.email,
+                    role: response.role
+                }));
+                
                 // Login successful, redirect to dashboard or home
                 navigate('/dashboard'); // You can change this to your desired route
             } else {

@@ -1,21 +1,29 @@
 package DTOs;
 
+import Models.Role;
+
 public class AuthResponseDTO {
     private String message;
     private boolean success;
     private Long userId;
+    private Role role;
 
     public AuthResponseDTO() {}
 
     public AuthResponseDTO(String message, boolean success) {
         this.message = message;
         this.success = success;
-    }
-
-    public AuthResponseDTO(String message, boolean success, Long userId) {
+    }    public AuthResponseDTO(String message, boolean success, Long userId) {
         this.message = message;
         this.success = success;
         this.userId = userId;
+    }
+
+    public AuthResponseDTO(String message, boolean success, Long userId, Role role) {
+        this.message = message;
+        this.success = success;
+        this.userId = userId;
+        this.role = role;
     }
 
     public String getMessage() {
@@ -32,13 +40,19 @@ public class AuthResponseDTO {
 
     public void setSuccess(boolean success) {
         this.success = success;
-    }
-
-    public Long getUserId() {
+    }    public Long getUserId() {
         return userId;
     }
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

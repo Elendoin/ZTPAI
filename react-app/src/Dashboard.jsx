@@ -16,7 +16,14 @@ function Dashboard() {
         try {
             const response = await authAPI.getStatus();
             if (response.success) {
-                setUser(response);
+                // Store user data including role
+                const userData = {
+                    userId: response.userId,
+                    email: response.email,
+                    role: response.role
+                };
+                localStorage.setItem('user', JSON.stringify(userData));
+                setUser(userData);
             } else {
                 navigate('/login');
             }
@@ -25,15 +32,15 @@ function Dashboard() {
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleLogout = async () => {
+    };    const handleLogout = async () => {
         try {
             await authAPI.logout();
+            localStorage.removeItem('user'); // Clear stored user data
             navigate('/login');
         } catch (error) {
             console.error('Logout failed:', error);
-            // Even if logout fails, redirect to login
+            // Even if logout fails, clear storage and redirect to login
+            localStorage.removeItem('user');
             navigate('/login');
         }
     };
@@ -55,26 +62,37 @@ function Dashboard() {
                     <h1 className="login-text" style={{ fontSize: '2.5em', marginBottom: '1em' }}>
                         Welcome to Popdle!
                     </h1>
-                    
-                    <div style={{ marginBottom: '2em' }}>
+                      <div style={{ marginBottom: '2em' }}>
                         <p className="login-text" style={{ fontSize: '1.2em', marginBottom: '0.5em' }}>
                             🎉 You are successfully logged in!
                         </p>
                         {user && (
-                            <p className="login-text" style={{ fontSize: '1em', color: '#666' }}>
-                                User ID: {user.userId || 'N/A'}
-                            </p>
+                            <>
+                                <p className="login-text" style={{ fontSize: '1em', color: '#666' }}>
+                                    Email: {user.email}
+                                </p>
+                                <p className="login-text" style={{ fontSize: '1em', color: '#666' }}>
+                                    Role: <span style={{ 
+                                        fontWeight: 'bold',
+                                        color: user.role === 'ADMIN' ? '#e74c3c' : '#27ae60',
+                                        backgroundColor: user.role === 'ADMIN' ? '#ffeaa7' : '#dff0d8',
+                                        padding: '2px 8px',
+                                        borderRadius: '12px',
+                                        fontSize: '0.9em'
+                                    }}>
+                                        {user.role}
+                                    </span>
+                                </p>
+                            </>
                         )}
-                    </div>                    <div style={{ marginBottom: '2em' }}>
+                    </div><div style={{ marginBottom: '2em' }}>
                         <p className="login-text" style={{ marginBottom: '1em' }}>
                             🎯 Ready to play some pop culture trivia?
                         </p>
                         <p className="login-text" style={{ fontSize: '0.9em', color: '#666' }}>
                             This is where your game dashboard will be implemented.
                         </p>
-                    </div>
-
-                    <div style={{ marginBottom: '2em' }}>
+                    </div>                    <div style={{ marginBottom: '2em' }}>
                         <h3 className="login-text" style={{ fontSize: '1.3em', marginBottom: '1em' }}>
                             👥 User Management
                         </h3>
@@ -84,6 +102,16 @@ function Dashboard() {
                                     View All Users
                                 </button>
                             </Link>
+                            {user?.role === 'ADMIN' && (
+                                <p className="login-text" style={{ 
+                                    fontSize: '0.9em', 
+                                    color: '#e74c3c',
+                                    marginTop: '0.5em',
+                                    fontStyle: 'italic'
+                                }}>
+                                    ⚡ As an admin, you can delete users
+                                </p>
+                            )}
                         </div>
                     </div>
 

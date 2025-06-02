@@ -3,6 +3,7 @@ package Services;
 import DTOs.LoginRequestDTO;
 import DTOs.RegisterRequestDTO;
 import DTOs.UserDTO;
+import Models.Role;
 import Models.User;
 import Models.UserDetailsEntity;
 import Models.UserStats;
@@ -33,11 +34,10 @@ public class AuthService {
     public User register(RegisterRequestDTO registerRequest) throws Exception {
         if (userRepository.findByEmail(registerRequest.getEmail()) != null) {
             throw new Exception("Email already exists");
-        }
-
-        User user = new User();
+        }        User user = new User();
         user.setEmail(registerRequest.getEmail());
         user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setRole(Role.USER); // Default role for new users
 
         // Create user details
         UserDetailsEntity userDetails = new UserDetailsEntity();
@@ -66,16 +66,15 @@ public class AuthService {
         } catch (AuthenticationException e) {
             throw new Exception("Invalid credentials");
         }
-    }
-
-    public UserDTO getUserInfo(String email) {
+    }    public UserDTO getUserInfo(String email) {
         User user = userRepository.findByEmail(email);
         if (user != null && user.getUserDetailsEntity() != null) {
             return new UserDTO(
                 user.getId(),
                 user.getEmail(),
                 user.getUserDetailsEntity().getName(),
-                user.getUserDetailsEntity().getSurname()
+                user.getUserDetailsEntity().getSurname(),
+                user.getRole()
             );
         }
         return null;

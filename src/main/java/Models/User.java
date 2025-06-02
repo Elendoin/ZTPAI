@@ -2,6 +2,7 @@ package Models;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
@@ -9,8 +10,7 @@ import java.util.Collections;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
-    @Id
+public class User implements UserDetails {    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -18,7 +18,13 @@ public class User implements UserDetails {
     private String email;
     
     @Column(nullable = false)
-    private String password;    @OneToOne(cascade = CascadeType.ALL)
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
+
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_details_id")
     private UserDetailsEntity userDetailsEntity;
 
@@ -27,22 +33,29 @@ public class User implements UserDetails {
     private UserStats userStats;
 
     public User() {}
-
+    
     public User(String email, String password) {
         this.email = email;
         this.password = password;
+        this.role = Role.USER;
     }
 
     public User(Long id, String email, String password) {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.role = Role.USER;
     }
 
+    public User(String email, String password, Role role) {
+        this.email = email;
+        this.password = password;        this.role = role;
+    }
+    
     // UserDetails implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList(); // For now, no roles
+        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.getValue()));
     }
 
     @Override
@@ -104,9 +117,15 @@ public class User implements UserDetails {
 
     public UserStats getUserStats() {
         return userStats;
+    }    public void setUserStats(UserStats userStats) {
+        this.userStats = userStats;
     }
 
-    public void setUserStats(UserStats userStats) {
-        this.userStats = userStats;
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

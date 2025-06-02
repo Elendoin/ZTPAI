@@ -31,10 +31,9 @@ public class AuthController {
     private Long jwtExpiration;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody RegisterRequestDTO registerRequest) {
-        try {
+    public ResponseEntity<AuthResponseDTO> register(@Valid @RequestBody RegisterRequestDTO registerRequest) {        try {
             User user = authService.register(registerRequest);
-            return ResponseEntity.ok(new AuthResponseDTO("User registered successfully", true, user.getId()));
+            return ResponseEntity.ok(new AuthResponseDTO("User registered successfully", true, user.getId(), user.getRole()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new AuthResponseDTO(e.getMessage(), false));
         }
@@ -52,11 +51,10 @@ public class AuthController {
             jwtCookie.setSecure(false); // Set to true in production with HTTPS
             jwtCookie.setPath("/");
             jwtCookie.setMaxAge((int) (jwtExpiration / 1000)); // Convert to seconds
-            
-            response.addCookie(jwtCookie);
+              response.addCookie(jwtCookie);
             
             UserDTO userInfo = authService.getUserInfo(loginRequest.getEmail());
-            return ResponseEntity.ok(new AuthResponseDTO("Login successful", true, userInfo.getId()));
+            return ResponseEntity.ok(new AuthResponseDTO("Login successful", true, userInfo.getId(), userInfo.getRole()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new AuthResponseDTO(e.getMessage(), false));
         }
@@ -87,15 +85,14 @@ public class AuthController {
         }
         
         return ResponseEntity.status(401).body(new AuthResponseDTO("Not authenticated", false));
-    }
-
-    @GetMapping("/status")
+    }    @GetMapping("/status")
     public ResponseEntity<AuthResponseDTO> getAuthStatus() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         
         if (authentication != null && authentication.isAuthenticated() && 
             !authentication.getPrincipal().equals("anonymousUser")) {
-            return ResponseEntity.ok(new AuthResponseDTO("Authenticated", true));
+            User user = (User) authentication.getPrincipal();
+            return ResponseEntity.ok(new AuthResponseDTO("Authenticated", true, user.getId(), user.getRole()));
         }
         
         return ResponseEntity.ok(new AuthResponseDTO("Not authenticated", false));
