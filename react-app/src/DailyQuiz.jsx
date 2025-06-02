@@ -140,14 +140,16 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ answer: optionLetter })
-            });
-
-            if (response.ok) {
+            });            if (response.ok) {
                 const result = await response.json();
                 setIsCorrect(result.correct);
                 setShowResult(true);
                 setHasAnsweredToday(true);
-                  // Update user stats
+                
+                // Fetch the question with correct answer so we can display it if they got it wrong
+                await fetchTodaysQuestionWithAnswer();
+                
+                // Update user stats
                 await updateUserStats(result.correct, optionLetter);
             }
         } catch (error) {
@@ -310,37 +312,40 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
                                     {question.optionD}
                                 </button>
                             </form>                            {showResult && (
-                                <div className="result-message">
-                                    {hasAnsweredToday ? (
+                                <div className="result-message">                                    {hasAnsweredToday && !selectedAnswer ? (
+                                        // User is returning after already answering today
                                         <>
-                                            <p style={{ color: 'orange', fontSize: '1.2em', fontWeight: 'bold' }}>
-                                                📅 You have already answered today's question!
-                                            </p>
                                             {userPreviousAnswer && (
-                                                <p style={{ color: 'white', fontSize: '1em' }}>
+                                                <p style={{ color: 'white', fontSize: '0.9em', margin: '5px 0' }}>
                                                     Your answer was: <span style={{ 
                                                         color: userPreviousAnswer === question.correctAnswer ? 'green' : 'red', 
                                                         fontWeight: 'bold' 
                                                     }}>{userPreviousAnswer}</span>
                                                 </p>
                                             )}
-                                            <p style={{ color: 'white', fontSize: '1em' }}>
+                                            <p style={{ color: 'white', fontSize: '0.9em', margin: '5px 0' }}>
                                                 The correct answer was: <span style={{ color: 'green', fontWeight: 'bold' }}>{question.correctAnswer}</span>
                                             </p>
                                             {userPreviousAnswer === question.correctAnswer ? (
-                                                <p style={{ color: 'green', fontSize: '1em', fontWeight: 'bold' }}>✅ You got it right!</p>
+                                                <p style={{ color: 'green', fontSize: '0.9em', fontWeight: 'bold', margin: '5px 0' }}>✅ You got it right!</p>
                                             ) : (
-                                                <p style={{ color: 'red', fontSize: '1em', fontWeight: 'bold' }}>❌ You got it wrong this time.</p>
+                                                <p style={{ color: 'red', fontSize: '0.9em', fontWeight: 'bold', margin: '5px 0' }}>❌ You got it wrong this time.</p>
                                             )}
-                                            <p style={{ color: 'white', fontSize: '0.9em' }}>
+                                            <p style={{ color: 'white', fontSize: '0.8em', margin: '5px 0' }}>
                                                 Come back tomorrow for the next question!
                                             </p>
                                         </>
                                     ) : (
+                                        // User just answered
                                         <>
                                             {isCorrect ? 
                                                 <p style={{ color: 'green', fontSize: '1.2em', fontWeight: 'bold' }}>✅ Correct!</p> : 
-                                                <p style={{ color: 'red', fontSize: '1.2em', fontWeight: 'bold' }}>❌ Incorrect!</p>
+                                                <>
+                                                    <p style={{ color: 'red', fontSize: '1.2em', fontWeight: 'bold' }}>❌ Incorrect!</p>
+                                                    <p style={{ color: 'white', fontSize: '1em' }}>
+                                                        The correct answer was: <span style={{ color: 'green', fontWeight: 'bold' }}>{question.correctAnswer}</span>
+                                                    </p>
+                                                </>
                                             }
                                         </>
                                     )}
