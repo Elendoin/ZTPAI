@@ -42,14 +42,17 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(404).body("User not found!");
         }
-    }
-
-    @PostMapping("/{id}/answer")
-    public ResponseEntity<?> updateUserAnswer(@PathVariable Long id, @RequestBody Map<String, Boolean> answerRequest) {
+    }    @PostMapping("/{id}/answer")
+    public ResponseEntity<?> updateUserAnswer(@PathVariable Long id, @RequestBody Map<String, Object> answerRequest) {
         try {
-            Boolean isCorrect = answerRequest.get("correct");
+            Boolean isCorrect = (Boolean) answerRequest.get("correct");
+            String userAnswer = (String) answerRequest.get("answer");
+            
             if (isCorrect == null) {
                 return ResponseEntity.badRequest().body("Missing 'correct' field");
+            }
+            if (userAnswer == null) {
+                return ResponseEntity.badRequest().body("Missing 'answer' field");
             }
 
             // Check if user has already answered today
@@ -57,7 +60,7 @@ public class UserController {
                 return ResponseEntity.badRequest().body("User has already answered today");
             }
 
-            User updatedUser = userService.updateUserStats(id, isCorrect);
+            User updatedUser = userService.updateUserStats(id, isCorrect, userAnswer);
             return ResponseEntity.ok(updatedUser);
         } catch (Exception e) {
             return ResponseEntity.status(404).body("User not found!");

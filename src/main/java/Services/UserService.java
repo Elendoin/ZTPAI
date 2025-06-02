@@ -28,9 +28,7 @@ public class UserService {
             throw new Exception("User not found");
         }
         userRepository.delete(user);
-    }
-
-    public User updateUserStats(long userId, boolean isCorrect) throws Exception {
+    }    public User updateUserStats(long userId, boolean isCorrect, String userAnswer) throws Exception {
         User user = userRepository.findById(userId);
         if (user == null) {
             throw new Exception("User not found");
@@ -49,7 +47,8 @@ public class UserService {
             stats.setLosses(stats.getLosses() + 1);
         }
 
-        // Set last answered to today
+        // Store the user's answer and set last answered to today
+        stats.setLatestAnswer(userAnswer);
         stats.setLastAnswered(LocalDate.now());
 
         return userRepository.save(user);

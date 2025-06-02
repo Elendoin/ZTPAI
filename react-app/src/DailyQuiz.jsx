@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { authAPI } from './api.js';
 import './DailyQuiz.css';
 
-function DailyQuiz() {
-    const [user, setUser] = useState(null);
+function DailyQuiz() {    const [user, setUser] = useState(null);
     const [question, setQuestion] = useState(null);
     const [userStats, setUserStats] = useState(null);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [hasAnsweredToday, setHasAnsweredToday] = useState(false);
     const [showResult, setShowResult] = useState(false);
     const [isCorrect, setIsCorrect] = useState(false);
+    const [userPreviousAnswer, setUserPreviousAnswer] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showStats, setShowStats] = useState(false);
     const navigate = useNavigate();
@@ -103,10 +103,11 @@ function DailyQuiz() {
                     }
                     
                     console.log('Debug - Final comparison result:', isToday);
-                    
-                    if (isToday) {
+                      if (isToday) {
                         setHasAnsweredToday(true);
                         setShowResult(true);
+                        // Store the user's previous answer
+                        setUserPreviousAnswer(userData.userStats.latestAnswer);
                         // If user has already answered, we need to show the correct answer
                         // We'll fetch it separately since the regular endpoint doesn't include it
                         await fetchTodaysQuestionWithAnswer();
@@ -146,14 +147,13 @@ function DailyQuiz() {
                 setIsCorrect(result.correct);
                 setShowResult(true);
                 setHasAnsweredToday(true);
-                
-                // Update user stats
-                await updateUserStats(result.correct);
+                  // Update user stats
+                await updateUserStats(result.correct, optionLetter);
             }
         } catch (error) {
             console.error('Error checking answer:', error);
         }
-    };    const updateUserStats = async (correct) => {
+    };    const updateUserStats = async (correct, userAnswer) => {
         try {
             const userData = JSON.parse(localStorage.getItem('user'));
             
@@ -164,7 +164,10 @@ function DailyQuiz() {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${localStorage.getItem('token')}` // if you're using JWT
                 },
-                body: JSON.stringify({ correct: correct })
+                body: JSON.stringify({ 
+                    correct: correct,
+                    answer: userAnswer
+                })
             });
 
             if (response.ok) {
@@ -200,9 +203,7 @@ function DailyQuiz() {
         }
     };    const toggleStats = () => {
         setShowStats(!showStats);
-    };
-
-    // Helper function to determine button class
+    };    // Helper function to determine button class
     const getButtonClass = (optionLetter, optionNumber) => {
         if (!showResult) {
             return ''; // No special class if no result to show
@@ -210,8 +211,15 @@ function DailyQuiz() {
         
         // If the user has already answered today (returning visitor)
         if (hasAnsweredToday && !selectedAnswer) {
-            // Only highlight the correct answer
-            return question.correctAnswer === optionLetter ? 'correct' : '';
+            // Show the correct answer in green
+            if (question.correctAnswer === optionLetter) {
+                return 'correct';
+            }
+            // Show the user's previous answer in red if it was wrong
+            if (userPreviousAnswer === optionLetter && userPreviousAnswer !== question.correctAnswer) {
+                return 'incorrect';
+            }
+            return '';
         }
         
         // If the user just answered (fresh answer)
@@ -301,17 +309,29 @@ function DailyQuiz() {
                                     <b>D: </b>
                                     {question.optionD}
                                 </button>
-                            </form>
-                              {showResult && (
+                            </form>                            {showResult && (
                                 <div className="result-message">
                                     {hasAnsweredToday ? (
                                         <>
                                             <p style={{ color: 'orange', fontSize: '1.2em', fontWeight: 'bold' }}>
                                                 📅 You have already answered today's question!
                                             </p>
+                                            {userPreviousAnswer && (
+                                                <p style={{ color: 'white', fontSize: '1em' }}>
+                                                    Your answer was: <span style={{ 
+                                                        color: userPreviousAnswer === question.correctAnswer ? 'green' : 'red', 
+                                                        fontWeight: 'bold' 
+                                                    }}>{userPreviousAnswer}</span>
+                                                </p>
+                                            )}
                                             <p style={{ color: 'white', fontSize: '1em' }}>
                                                 The correct answer was: <span style={{ color: 'green', fontWeight: 'bold' }}>{question.correctAnswer}</span>
                                             </p>
+                                            {userPreviousAnswer === question.correctAnswer ? (
+                                                <p style={{ color: 'green', fontSize: '1em', fontWeight: 'bold' }}>✅ You got it right!</p>
+                                            ) : (
+                                                <p style={{ color: 'red', fontSize: '1em', fontWeight: 'bold' }}>❌ You got it wrong this time.</p>
+                                            )}
                                             <p style={{ color: 'white', fontSize: '0.9em' }}>
                                                 Come back tomorrow for the next question!
                                             </p>
