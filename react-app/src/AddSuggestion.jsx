@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { authAPI, suggestionAPI } from './api.js';
 import Navigation from './Navigation.jsx';
 import './DailyQuiz.css';
 
 function AddSuggestion() {
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
     const [formData, setFormData] = useState({
         title: '',
         description: '',
         image: null
     });
-    const [loading, setLoading] = useState(false);
-    const [showStats, setShowStats] = useState(false);
-    const [userStats, setUserStats] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,28 +30,12 @@ function AddSuggestion() {
                 return;
             }
             setUser(userData);
-            await fetchUserStats(userData.userId);
         } catch (error) {
             console.error('Error initializing page:', error);
+            navigate('/login');
+        } finally {
+            setLoading(false);
         }
-    };
-
-    const fetchUserStats = async (userId) => {
-        try {
-            const response = await fetch(`/api/users/${userId}`);
-            if (response.ok) {
-                const userData = await response.json();
-                if (userData.userStats) {
-                    setUserStats(userData.userStats);
-                }
-            }
-        } catch (error) {
-            console.error('Error fetching user stats:', error);
-        }
-    };
-
-    const toggleStats = () => {
-        setShowStats(!showStats);
     };
 
     const handleInputChange = (e) => {
@@ -58,87 +44,92 @@ function AddSuggestion() {
             ...prev,
             [name]: value
         }));
+        // Clear any previous error when user starts typing
+        if (error) setError('');
+        if (message) setMessage('');
     };
 
-    const handleImageChange = (e) => {
+    const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            // Validate file type
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!validTypes.includes(file.type)) {
+                setError('Please upload a valid image file (JPEG, PNG, or GIF)');
+                return;
+            }
+
+            // Validate file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+                setError('Image file size must be less than 5MB');
+                return;
+            }
+
             setFormData(prev => ({
                 ...prev,
                 image: file
             }));
-            
+
             // Create preview
             const reader = new FileReader();
             reader.onload = (e) => {
                 setImagePreview(e.target.result);
             };
             reader.readAsDataURL(file);
+            
+            if (error) setError('');
         }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
-        if (!formData.title.trim() || !formData.description.trim()) {
-            alert('Please fill in both title and description');
+        setSubmitting(true);
+        setError('');
+        setMessage('');
+
+        // Validate form
+        if (!formData.title.trim()) {
+            setError('Title is required');
+            setSubmitting(false);
             return;
         }
 
-        setLoading(true);
-        
+        if (!formData.description.trim()) {
+            setError('Description is required');
+            setSubmitting(false);
+            return;
+        }
+
         try {
-            let imagePath = null;
+            const submitData = new FormData();
+            submitData.append('title', formData.title.trim());
+            submitData.append('description', formData.description.trim());
             
-            // Upload image if provided
             if (formData.image) {
-                const imageFormData = new FormData();
-                imageFormData.append('image', formData.image);
-                
-                const imageResponse = await fetch('/api/suggestions/upload-image', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: imageFormData
-                });
-                
-                if (imageResponse.ok) {
-                    const imageData = await imageResponse.json();
-                    imagePath = imageData.imagePath;
-                } else {
-                    throw new Error('Failed to upload image');
-                }
+                submitData.append('file', formData.image);
             }
+
+            await suggestionAPI.createSuggestion(submitData);
             
-            // Create suggestion
-            const suggestionData = {
-                title: formData.title.trim(),
-                description: formData.description.trim(),
-                image: imagePath
-            };
+            setMessage('Suggestion created successfully!');
             
-            const response = await fetch('/api/suggestions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify(suggestionData)
+            // Reset form
+            setFormData({
+                title: '',
+                description: '',
+                image: null
             });
+            setImagePreview(null);
             
-            if (response.ok) {
+            // Redirect to suggestions page after a brief delay
+            setTimeout(() => {
                 navigate('/suggestions');
-            } else {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to create suggestion');
-            }
+            }, 2000);
             
-        } catch (error) {
-            console.error('Error creating suggestion:', error);
-            alert('Failed to create suggestion: ' + error.message);
+        } catch (err) {
+            setError(err.message || 'Failed to create suggestion');
         } finally {
-            setLoading(false);
+            setSubmitting(false);
         }
     };
 
@@ -146,103 +137,111 @@ function AddSuggestion() {
         navigate('/suggestions');
     };
 
-    if (!user) {
-        return <div>Loading...</div>;
+    if (loading) {
+        return (
+            <div className="browse-container">
+                <p style={{ color: 'white', textAlign: 'center' }}>Loading...</p>
+            </div>
+        );
     }
 
     return (
         <div className="browse-container">
             <Navigation 
                 user={user} 
-                currentPage="add-suggestion" 
-                showStats={showStats} 
-                onToggleStats={toggleStats} 
+                currentPage="add-suggestion"
             />
-              <header>
-                <div className="add-suggestion-header-text">
-                    Add New Suggestion
-                </div>
-            </header>
             
             <main className="add-suggestion-container">
+                <h1 className="add-suggestion-header-text">Add New Suggestion</h1>
+                
                 <form className="add-suggestion-form" onSubmit={handleSubmit}>
+                    {message && (
+                        <div className="message-success" style={{ marginBottom: '20px' }}>
+                            {message}
+                        </div>
+                    )}
+                    
+                    {error && (
+                        <div className="message-error" style={{ marginBottom: '20px' }}>
+                            {error}
+                        </div>
+                    )}
+                    
                     <div className="add-suggestion-form-group">
-                        <label className="add-suggestion-label" htmlFor="title">Title:</label>
+                        <label className="add-suggestion-label" htmlFor="title">
+                            Title *
+                        </label>
                         <input
-                            className="add-suggestion-input"
                             type="text"
                             id="title"
                             name="title"
                             value={formData.title}
                             onChange={handleInputChange}
+                            className="add-suggestion-input"
                             placeholder="Enter suggestion title"
-                            maxLength={100}
                             required
                         />
                     </div>
                     
                     <div className="add-suggestion-form-group">
-                        <label className="add-suggestion-label" htmlFor="description">Description:</label>
+                        <label className="add-suggestion-label" htmlFor="description">
+                            Description *
+                        </label>
                         <textarea
-                            className="add-suggestion-textarea"
                             id="description"
                             name="description"
                             value={formData.description}
                             onChange={handleInputChange}
-                            placeholder="Enter suggestion description"
-                            rows={6}
-                            maxLength={500}
+                            className="add-suggestion-textarea"
+                            placeholder="Describe your suggestion"
+                            rows="5"
                             required
                         />
                     </div>
                     
                     <div className="add-suggestion-form-group">
-                        <label className="add-suggestion-label" htmlFor="image">Image (optional):</label>
+                        <label className="add-suggestion-label" htmlFor="image">
+                            Image (Optional)
+                        </label>
                         <input
-                            className="add-suggestion-file-input"
                             type="file"
                             id="image"
                             name="image"
-                            onChange={handleImageChange}
+                            onChange={handleFileChange}
+                            className="add-suggestion-file-input"
                             accept="image/*"
                         />
+                        
                         {imagePreview && (
                             <div className="add-suggestion-image-preview">
-                                <img className="add-suggestion-preview-image" src={imagePreview} alt="Preview" />
+                                <img
+                                    src={imagePreview}
+                                    alt="Preview"
+                                    className="add-suggestion-preview-image"
+                                />
                             </div>
                         )}
                     </div>
                     
                     <div className="add-suggestion-form-actions">
-                        <button 
-                            type="button" 
-                            className="add-suggestion-cancel-button" 
+                        <button
+                            type="button"
                             onClick={handleCancel}
-                            disabled={loading}
+                            className="add-suggestion-cancel-button"
                         >
                             Cancel
                         </button>
-                        <button 
-                            type="submit" 
-                            className="add-suggestion-submit-button" 
-                            disabled={loading}
+                        <button
+                            type="submit"
+                            disabled={submitting}
+                            className="add-suggestion-submit-button"
                         >
-                            {loading ? 'Creating...' : 'Create Suggestion'}
+                            {submitting ? 'Submitting...' : 'Submit Suggestion'}
                         </button>
                     </div>
                 </form>
             </main>
-            
-            {showStats && userStats && (
-                <div className="stats show">
-                    <b>My Stats</b>
-                    <p>Games Played: {(userStats.wins || 0) + (userStats.losses || 0)}</p>
-                    <p>Games Won: {userStats.wins || 0}</p>
-                    <p>Win Rate: {((userStats.wins || 0) / Math.max((userStats.wins || 0) + (userStats.losses || 0), 1) * 100).toFixed(1)}%</p>
-                    <p>Current Streak: {userStats.currentStreak || 0}</p>
-                    <p>Best Streak: {userStats.bestStreak || 0}</p>
-                </div>
-            )}
         </div>
     );
 }

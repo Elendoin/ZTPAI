@@ -74,4 +74,38 @@ export const userAPI = {
   },
 };
 
+export const suggestionAPI = {
+  createSuggestion: async (formData) => {
+    try {
+      const response = await axios.post('/api/suggestions', formData, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to create suggestion' };
+    }
+  },
+
+  getAllSuggestions: async () => {
+    try {
+      const response = await api.get('/suggestions');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to fetch suggestions' };
+    }
+  },
+
+  likeSuggestion: async (suggestionId) => {
+    try {
+      const response = await api.post(`/suggestions/${suggestionId}/like`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to like suggestion' };
+    }
+  },
+};
+
 export default api;

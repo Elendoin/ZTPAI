@@ -4,14 +4,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import Models.Suggestion;
 import Models.User;
 import Services.SuggestionService;
 import Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/suggestions")
@@ -38,25 +45,57 @@ public class SuggestionController {
         if (suggestion == null) {
             return ResponseEntity.status(404).body("Suggestion not found!");
         }        return ResponseEntity.ok(suggestion);
-    }
-
-    @PostMapping
-    public ResponseEntity<?> createSuggestion(@RequestBody Map<String, Object> suggestionRequest) {
+    }    @PostMapping
+    public ResponseEntity<?> createSuggestion(
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = auth.getName();
             User currentUser = userService.getUserByEmail(currentUserEmail);
 
-            String title = (String) suggestionRequest.get("title");
-            String description = (String) suggestionRequest.get("description");
-            String image = (String) suggestionRequest.get("image");
-
             if (title == null || title.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("Title is required");
             }
 
-            Suggestion newSuggestion = suggestionService.createSuggestion(title, description, image, currentUser);
+            String imagePath = null;
+            if (file != null && !file.isEmpty()) {
+                // Validate file type
+                String contentType = file.getContentType();
+                if (contentType == null || (!contentType.startsWith("image/"))) {
+                    return ResponseEntity.badRequest().body("Invalid file type. Only images are allowed.");
+                }
+
+                // Validate file size (5MB limit)
+                if (file.getSize() > 5 * 1024 * 1024) {
+                    return ResponseEntity.badRequest().body("File size too large. Maximum size is 5MB.");
+                }
+
+                // Generate unique filename
+                String originalFilename = file.getOriginalFilename();
+                String fileExtension = "";
+                if (originalFilename != null && originalFilename.contains(".")) {
+                    fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                }
+                String fileName = UUID.randomUUID().toString() + fileExtension;
+
+                // Save file to react-app/public/img directory
+                Path uploadPath = Paths.get("react-app/public/img");
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+                
+                Path filePath = uploadPath.resolve(fileName);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                
+                imagePath = fileName; // Just store the filename, not the full path
+            }
+
+            Suggestion newSuggestion = suggestionService.createSuggestion(title, description, imagePath, currentUser);
             return ResponseEntity.ok(newSuggestion);
+        } catch (IOException e) {
+            return ResponseEntity.badRequest().body("Failed to upload file: " + e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to create suggestion: " + e.getMessage());
         }

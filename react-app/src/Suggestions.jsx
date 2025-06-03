@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { suggestionAPI } from './api.js';
 import Navigation from './Navigation.jsx';
 import './DailyQuiz.css';
 
@@ -47,22 +48,11 @@ function Suggestions() {
         } finally {
             setLoading(false);
         }
-    };
-
-    const fetchSuggestions = async () => {
+    };    const fetchSuggestions = async () => {
         try {
-            const response = await fetch('/api/suggestions', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            if (response.ok) {
-                const suggestionsData = await response.json();
-                setSuggestions(suggestionsData);
-                setFilteredSuggestions(suggestionsData);
-            } else {
-                console.error('Failed to fetch suggestions');
-            }
+            const suggestionsData = await suggestionAPI.getAllSuggestions();
+            setSuggestions(suggestionsData);
+            setFilteredSuggestions(suggestionsData);
         } catch (error) {
             console.error('Error fetching suggestions:', error);
         }
@@ -92,20 +82,11 @@ function Suggestions() {
 
     const handleAddSuggestion = () => {
         navigate('/add-suggestion');
-    };
-
-    const handleLikeSuggestion = async (suggestionId) => {
+    };    const handleLikeSuggestion = async (suggestionId) => {
         try {
-            const response = await fetch(`/api/suggestions/${suggestionId}/like`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            if (response.ok) {
-                // Refresh suggestions to show updated like count
-                await fetchSuggestions();
-            }
+            await suggestionAPI.likeSuggestion(suggestionId);
+            // Refresh suggestions to show updated like count
+            await fetchSuggestions();
         } catch (error) {
             console.error('Error liking suggestion:', error);
         }
