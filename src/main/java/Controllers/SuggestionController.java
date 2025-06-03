@@ -11,6 +11,14 @@ import DTOs.SuggestionDTO;
 import Services.SuggestionService;
 import Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +31,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/suggestions")
+@Tag(name = "Suggestions", description = "Suggestion management endpoints")
 public class SuggestionController {
 
     @Autowired
@@ -30,6 +39,15 @@ public class SuggestionController {
 
     @Autowired
     private UserService userService;    @GetMapping
+    @Operation(summary = "Get all suggestions", description = "Retrieve all suggestions with user-specific like status")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Suggestions retrieved successfully",
+                    content = @Content(mediaType = "application/json", 
+                                     schema = @Schema(implementation = SuggestionDTO.class))),
+        @ApiResponse(responseCode = "404", description = "No suggestions found"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<?> getSuggestions() {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -48,19 +66,35 @@ public class SuggestionController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error fetching suggestions: " + e.getMessage());
         }
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getSuggestion(@PathVariable Long id) {
+    }    @GetMapping("/{id}")
+    @Operation(summary = "Get suggestion by ID", description = "Retrieve a specific suggestion by its ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Suggestion found",
+                    content = @Content(mediaType = "application/json", 
+                                     schema = @Schema(implementation = Suggestion.class))),
+        @ApiResponse(responseCode = "404", description = "Suggestion not found")
+    })
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<?> getSuggestion(
+            @Parameter(description = "Suggestion ID", required = true) @PathVariable Long id) {
         Suggestion suggestion = suggestionService.getSuggestionById(id);
         if (suggestion == null) {
             return ResponseEntity.status(404).body("Suggestion not found!");
         }        return ResponseEntity.ok(suggestion);
     }    @PostMapping
+    @Operation(summary = "Create new suggestion", description = "Create a new suggestion with title, description and optional image")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Suggestion created successfully",
+                    content = @Content(mediaType = "application/json", 
+                                     schema = @Schema(implementation = Suggestion.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid input data"),
+        @ApiResponse(responseCode = "401", description = "Authentication required")
+    })
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<?> createSuggestion(
-            @RequestParam("title") String title,
-            @RequestParam("description") String description,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
+            @Parameter(description = "Suggestion title", required = true) @RequestParam("title") String title,
+            @Parameter(description = "Suggestion description", required = true) @RequestParam("description") String description,
+            @Parameter(description = "Optional image file") @RequestParam(value = "file", required = false) MultipartFile file) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = auth.getName();
@@ -140,7 +174,17 @@ public class SuggestionController {
             return ResponseEntity.badRequest().body("Failed to update suggestion: " + e.getMessage());
         }
     }    @PostMapping("/{id}/like")
-    public ResponseEntity<?> likeSuggestion(@PathVariable Long id) {
+    @Operation(summary = "Toggle like on suggestion", description = "Like or unlike a suggestion (toggles the current state)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Like status toggled successfully",
+                    content = @Content(mediaType = "application/json", 
+                                     schema = @Schema(implementation = SuggestionDTO.class))),
+        @ApiResponse(responseCode = "401", description = "User not authenticated"),
+        @ApiResponse(responseCode = "404", description = "Suggestion not found")
+    })
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<?> likeSuggestion(
+            @Parameter(description = "Suggestion ID", required = true) @PathVariable Long id) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = auth.getName();
@@ -165,10 +209,16 @@ public class SuggestionController {
         } catch (Exception e) {
             return ResponseEntity.status(404).body("Suggestion not found!");
         }
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteSuggestion(@PathVariable Long id) {
+    }    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete suggestion", description = "Delete a suggestion (only by owner or admin)")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Suggestion deleted successfully"),
+        @ApiResponse(responseCode = "403", description = "Insufficient privileges - you can only delete your own suggestions"),
+        @ApiResponse(responseCode = "404", description = "Suggestion not found")
+    })
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<?> deleteSuggestion(
+            @Parameter(description = "Suggestion ID", required = true) @PathVariable Long id) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = auth.getName();

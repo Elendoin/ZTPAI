@@ -1,12 +1,23 @@
 package DTOs;
 
 import Models.Role;
+import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "Authentication response containing user details and operation status")
 public class AuthResponseDTO {
+    @Schema(description = "Response message", example = "Login successful")
     private String message;
+    
+    @Schema(description = "Operation success status", example = "true")
     private boolean success;
+    
+    @Schema(description = "User ID", example = "1")
     private Long userId;
+    
+    @Schema(description = "User role")
     private Role role;
+    
+    @Schema(description = "User email", example = "user@example.com")
     private String email;
 
     public AuthResponseDTO() {}

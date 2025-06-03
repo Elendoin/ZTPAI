@@ -47,21 +47,8 @@ public class QuestionService {
                 .map(this::convertToDTO);
     }
 
-    public Optional<QuestionDTO> getQuestionByDate(LocalDate date) {
-        return questionRepository.findByDateExact(date)
+    public Optional<QuestionDTO> getQuestionByDate(LocalDate date) {        return questionRepository.findByDateExact(date)
                 .map(this::convertToDTOWithoutAnswer);
-    }
-
-    public List<QuestionDTO> getQuestionsByDateRange(LocalDate startDate, LocalDate endDate) {
-        return questionRepository.findByDateBetween(startDate, endDate).stream()
-                .map(this::convertToDTOWithoutAnswer)
-                .collect(Collectors.toList());
-    }
-
-    public List<QuestionDTO> getAllQuestionsOrderedByDate() {
-        return questionRepository.findAllByOrderByDateDesc().stream()
-                .map(this::convertToDTOWithoutAnswer)
-                .collect(Collectors.toList());
     }
 
     public QuestionDTO createQuestion(QuestionDTO questionDTO) {
@@ -80,18 +67,12 @@ public class QuestionService {
         updateQuestionFromDTO(question, questionDTO);
         Question updatedQuestion = questionRepository.save(question);
         return convertToDTO(updatedQuestion);
-    }
-
-    public void deleteQuestion(Long id) throws Exception {
+    }    public void deleteQuestion(Long id) throws Exception {
         Optional<Question> question = questionRepository.findById(id);
         if (question.isEmpty()) {
             throw new Exception("Question not found");
         }
         questionRepository.delete(question.get());
-    }
-
-    public long getTotalQuestionCount() {
-        return questionRepository.count();
     }
 
     public boolean checkAnswer(Long questionId, String userAnswer) {

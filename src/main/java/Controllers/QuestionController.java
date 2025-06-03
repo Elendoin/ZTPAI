@@ -39,26 +39,12 @@ public class QuestionController {    @Autowired
     public ResponseEntity<QuestionDTO> getTodaysQuestionWithAnswer() {
         Optional<QuestionDTO> question = questionService.getTodaysQuestionWithAnswer();
         return question.map(ResponseEntity::ok)
-                      .orElse(ResponseEntity.notFound().build());    }
-
-    @GetMapping("/date/{date}")
+                      .orElse(ResponseEntity.notFound().build());    }    @GetMapping("/date/{date}")
     public ResponseEntity<QuestionDTO> getQuestionByDate(
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         Optional<QuestionDTO> question = questionService.getQuestionByDate(date);
         return question.map(ResponseEntity::ok)
                       .orElse(ResponseEntity.notFound().build());    }
-
-    @GetMapping("/range")
-    public ResponseEntity<List<QuestionDTO>> getQuestionsByDateRange(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        List<QuestionDTO> questions = questionService.getQuestionsByDateRange(startDate, endDate);
-        return ResponseEntity.ok(questions);    }
-
-    @GetMapping("/ordered")
-    public ResponseEntity<List<QuestionDTO>> getAllQuestionsOrderedByDate() {
-        List<QuestionDTO> questions = questionService.getAllQuestionsOrderedByDate();        return ResponseEntity.ok(questions);
-    }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
@@ -97,15 +83,8 @@ public class QuestionController {    @Autowired
             return ResponseEntity.badRequest().body(Map.of("error", "Answer is required"));
         }
 
-        boolean isCorrect = questionService.checkAnswer(id, userAnswer);
-        return ResponseEntity.ok(Map.of(
+        boolean isCorrect = questionService.checkAnswer(id, userAnswer);        return ResponseEntity.ok(Map.of(
             "correct", isCorrect,
             "questionId", id
         ));    }
-
-    @GetMapping("/count")
-    public ResponseEntity<Map<String, Long>> getTotalQuestionCount() {
-        long count = questionService.getTotalQuestionCount();
-        return ResponseEntity.ok(Map.of("totalQuestions", count));
-    }
 }

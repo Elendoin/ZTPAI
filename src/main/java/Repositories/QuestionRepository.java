@@ -12,11 +12,6 @@ import java.util.Optional;
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
     List<Question> findAll();    Optional<Question> findById(Long id);
-      List<Question> findByDate(LocalDate date);
-      List<Question> findByDateBetween(LocalDate startDate, LocalDate endDate);
-      List<Question> findAllByOrderByDateDesc();
     
     @Query("SELECT q FROM Question q WHERE q.date = :date")    Optional<Question> findByDateExact(LocalDate date);
-    
-    long count();
 }

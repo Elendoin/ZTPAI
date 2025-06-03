@@ -11,29 +11,51 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
-public class UserController {    @Autowired
+@Tag(name = "Users", description = "User management endpoints")
+public class UserController {@Autowired
     private UserService userService;
 
     @Value("${jwt.cookie.name}")
-    private String jwtCookieName;
-
-    @GetMapping
+    private String jwtCookieName;    @GetMapping
+    @Operation(summary = "Get all users", description = "Retrieve all users in the system")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Users retrieved successfully",
+                    content = @Content(mediaType = "application/json", 
+                                     schema = @Schema(implementation = User.class))),
+        @ApiResponse(responseCode = "404", description = "No users found")
+    })
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<?> getUsers(){
         List<User> users = userService.getAllUsers();
         if(users.isEmpty()){
             return ResponseEntity.status(404).build();
         }
         return ResponseEntity.ok(users);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getUser(@PathVariable Long id){
+    }    @GetMapping("/{id}")
+    @Operation(summary = "Get user by ID", description = "Retrieve a specific user by their ID")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "User found",
+                    content = @Content(mediaType = "application/json", 
+                                     schema = @Schema(implementation = User.class))),
+        @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<?> getUser(
+            @Parameter(description = "User ID", required = true) @PathVariable Long id){
         User user = userService.getUserById(id);
         if(user == null) {
             return ResponseEntity.status(404).body("User not found!");
