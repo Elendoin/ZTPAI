@@ -3,9 +3,11 @@ package Services;
 import Repositories.SuggestionRepository;
 import org.springframework.stereotype.Service;
 import Models.*;
+import DTOs.SuggestionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.time.LocalDateTime;
 
 @Service
@@ -13,6 +15,9 @@ public class SuggestionService {
     
     @Autowired
     private SuggestionRepository suggestionRepository;
+
+    @Autowired
+    private UserSuggestionService userSuggestionService;
 
     public Suggestion getSuggestionById(long id) {
         return suggestionRepository.findById(id);
@@ -32,10 +37,24 @@ public class SuggestionService {
 
     public List<Suggestion> getSuggestionsByDate() {
         return suggestionRepository.findByOrderByCreatedAtDesc();
+    }    public List<Suggestion> searchSuggestionsByTitle(String title) {
+        return suggestionRepository.findByTitleContainingIgnoreCase(title);
     }
 
-    public List<Suggestion> searchSuggestionsByTitle(String title) {
-        return suggestionRepository.findByTitleContainingIgnoreCase(title);
+    public List<SuggestionDTO> getAllSuggestionsWithUserInfo(User currentUser) {
+        List<Suggestion> suggestions = suggestionRepository.findAll();
+        List<SuggestionDTO> suggestionDTOs = new ArrayList<>();
+        
+        for (Suggestion suggestion : suggestions) {
+            String assignedByEmail = suggestion.getAssignedBy() != null ? 
+                suggestion.getAssignedBy().getEmail() : "Anonymous";
+            boolean isLiked = currentUser != null && 
+                userSuggestionService.existsByUserAndSuggestion(currentUser, suggestion);
+            
+            suggestionDTOs.add(new SuggestionDTO(suggestion, assignedByEmail, isLiked));
+        }
+        
+        return suggestionDTOs;
     }
 
     public Suggestion createSuggestion(String title, String description, String image, User assignedBy) throws Exception {
@@ -74,9 +93,7 @@ public class SuggestionService {
         }
 
         return suggestionRepository.save(suggestion);
-    }
-
-    public Suggestion likeSuggestion(long id) throws Exception {
+    }    public Suggestion likeSuggestion(long id) throws Exception {
         Suggestion suggestion = suggestionRepository.findById(id);
         if (suggestion == null) {
             throw new Exception("Suggestion not found");
@@ -84,6 +101,35 @@ public class SuggestionService {
 
         suggestion.setLikes(suggestion.getLikes() + 1);
         return suggestionRepository.save(suggestion);
+    }
+
+    public SuggestionDTO toggleLikeSuggestion(long suggestionId, User user) throws Exception {
+        Suggestion suggestion = suggestionRepository.findById(suggestionId);
+        if (suggestion == null) {
+            throw new Exception("Suggestion not found");
+        }
+
+        boolean wasLiked = userSuggestionService.existsByUserAndSuggestion(user, suggestion);
+        
+        if (wasLiked) {
+            // Unlike: remove relationship and decrease like count
+            userSuggestionService.deleteUserSuggestion(user, suggestion);
+            if (suggestion.getLikes() > 0) {
+                suggestion.setLikes(suggestion.getLikes() - 1);
+            }
+        } else {
+            // Like: create relationship and increase like count
+            userSuggestionService.createUserSuggestion(user, suggestion);
+            suggestion.setLikes(suggestion.getLikes() + 1);
+        }
+        
+        suggestion = suggestionRepository.save(suggestion);
+        
+        String assignedByEmail = suggestion.getAssignedBy() != null ? 
+            suggestion.getAssignedBy().getEmail() : "Anonymous";
+        boolean isLiked = !wasLiked; // Toggle the state
+        
+        return new SuggestionDTO(suggestion, assignedByEmail, isLiked);
     }
 
     public Suggestion unlikeSuggestion(long id) throws Exception {

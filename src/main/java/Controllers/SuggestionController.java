@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import Models.Suggestion;
 import Models.User;
+import DTOs.SuggestionDTO;
 import Services.SuggestionService;
 import Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,15 +29,25 @@ public class SuggestionController {
     private SuggestionService suggestionService;
 
     @Autowired
-    private UserService userService;
-
-    @GetMapping
+    private UserService userService;    @GetMapping
     public ResponseEntity<?> getSuggestions() {
-        List<Suggestion> suggestions = suggestionService.getAllSuggestions();
-        if (suggestions.isEmpty()) {
-            return ResponseEntity.status(404).build();
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            User currentUser = null;
+            
+            if (auth != null && !auth.getName().equals("anonymousUser")) {
+                String currentUserEmail = auth.getName();
+                currentUser = userService.getUserByEmail(currentUserEmail);
+            }
+            
+            List<SuggestionDTO> suggestions = suggestionService.getAllSuggestionsWithUserInfo(currentUser);
+            if (suggestions.isEmpty()) {
+                return ResponseEntity.status(404).build();
+            }
+            return ResponseEntity.ok(suggestions);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error fetching suggestions: " + e.getMessage());
         }
-        return ResponseEntity.ok(suggestions);
     }
 
     @GetMapping("/{id}")
@@ -128,13 +139,19 @@ public class SuggestionController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Failed to update suggestion: " + e.getMessage());
         }
-    }
-
-    @PostMapping("/{id}/like")
+    }    @PostMapping("/{id}/like")
     public ResponseEntity<?> likeSuggestion(@PathVariable Long id) {
         try {
-            Suggestion likedSuggestion = suggestionService.likeSuggestion(id);
-            return ResponseEntity.ok(likedSuggestion);
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = auth.getName();
+            User currentUser = userService.getUserByEmail(currentUserEmail);
+            
+            if (currentUser == null) {
+                return ResponseEntity.status(401).body("User not authenticated");
+            }
+            
+            SuggestionDTO suggestionDTO = suggestionService.toggleLikeSuggestion(id, currentUser);
+            return ResponseEntity.ok(suggestionDTO);
         } catch (Exception e) {
             return ResponseEntity.status(404).body("Suggestion not found!");
         }

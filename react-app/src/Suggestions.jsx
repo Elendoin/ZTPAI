@@ -84,9 +84,21 @@ function Suggestions() {
         navigate('/add-suggestion');
     };    const handleLikeSuggestion = async (suggestionId) => {
         try {
-            await suggestionAPI.likeSuggestion(suggestionId);
-            // Refresh suggestions to show updated like count
-            await fetchSuggestions();
+            const updatedSuggestion = await suggestionAPI.likeSuggestion(suggestionId);
+            
+            // Update the specific suggestion in the state
+            setSuggestions(prevSuggestions => 
+                prevSuggestions.map(suggestion => 
+                    suggestion.id === suggestionId ? updatedSuggestion : suggestion
+                )
+            );
+            
+            // Update filtered suggestions as well
+            setFilteredSuggestions(prevFiltered => 
+                prevFiltered.map(suggestion => 
+                    suggestion.id === suggestionId ? updatedSuggestion : suggestion
+                )
+            );
         } catch (error) {
             console.error('Error liking suggestion:', error);
         }
@@ -139,8 +151,7 @@ function Suggestions() {
                                         }}
                                     />
                                 )}
-                                <p className="suggestion-card-description">{suggestion.description}</p>
-                                <div className="suggestion-card-footer">
+                                <p className="suggestion-card-description">{suggestion.description}</p>                                <div className="suggestion-card-footer">
                                     <button 
                                         className={`suggestion-like-button ${suggestion.isLiked ? 'liked' : ''}`}
                                         onClick={() => handleLikeSuggestion(suggestion.id)}
@@ -149,7 +160,7 @@ function Suggestions() {
                                         {suggestion.likes || 0}
                                     </button>
                                     <span className="suggestion-author">
-                                        by {suggestion.assignedBy?.email || 'Anonymous'}
+                                        by {suggestion.assignedByEmail || 'Anonymous'}
                                     </span>
                                 </div>
                             </div>
