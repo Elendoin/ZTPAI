@@ -2,6 +2,8 @@ package Controllers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import Models.User;
 import Services.UserService;
@@ -34,15 +36,22 @@ public class UserController {
         }
         return ResponseEntity.ok(user);
     }    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteUser(@PathVariable Long id){
         try {
-            userService.deleteUser(id);
-            return ResponseEntity.ok("User successfully deleted! ID: " + id);
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            String currentUserEmail = auth.getName();
+            User currentUser = userService.getUserByEmail(currentUserEmail);
+            
+            if (currentUser.getRole().getValue().equals("ADMIN") || currentUser.getId().equals(id)) {
+                userService.deleteUser(id);
+                return ResponseEntity.ok("User successfully deleted! ID: " + id);
+            } else {
+                return ResponseEntity.status(403).body("You can only delete your own profile or you need admin privileges");
+            }
         } catch (Exception e) {
             return ResponseEntity.status(404).body("User not found!");
         }
-    }    @PostMapping("/{id}/answer")
+    }@PostMapping("/{id}/answer")
     public ResponseEntity<?> updateUserAnswer(@PathVariable Long id, @RequestBody Map<String, Object> answerRequest) {
         try {
             Boolean isCorrect = (Boolean) answerRequest.get("correct");

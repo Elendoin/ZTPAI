@@ -137,9 +137,12 @@ const UserDetail = () => {
               <h3 className="login-text user-detail-section-title user-detail-section-title-compact">
                 Basic Information
               </h3>
+              {currentUser?.role === 'ADMIN' && (
+                <div className="login-text user-detail-field user-detail-field-compact">
+                  <strong>ID:</strong> {user.id}
+                </div>
+              )}
               <div className="login-text user-detail-field user-detail-field-compact">
-                <strong>ID:</strong> {user.id}
-              </div>              <div className="login-text user-detail-field user-detail-field-compact">
                 <strong>Email:</strong> {user.email}
               </div>
               <div className="login-text user-detail-field user-detail-field-compact">
