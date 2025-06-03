@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from './api.js';
+import Navigation from './Navigation.jsx';
 import './DailyQuiz.css';
 
 function DailyQuiz() {    const [user, setUser] = useState(null);
@@ -157,34 +158,18 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
         } catch (error) {
             console.error('Error updating user stats:', error);
         }
-    };
-
-    const updateDateTime = () => {
+    };    const updateDateTime = () => {
         const now = new Date();
         const timeString = now.toLocaleString();
         const dateTimeElement = document.getElementById('datetime');
         if (dateTimeElement) {
             dateTimeElement.textContent = timeString;
         }
-    };    const handleLogout = async () => {
-        try {
-            await authAPI.logout();
-            localStorage.removeItem('user');
-            navigate('/login');
-        } catch (error) {
-            console.error('Logout failed:', error);
-            localStorage.removeItem('user');
-            navigate('/login');
-        }
     };
 
-    const handleProfileClick = () => {
-        if (user?.userId) {
-            navigate(`/users/${user.userId}`);
-        }
-    };const toggleStats = () => {
+    const toggleStats = () => {
         setShowStats(!showStats);
-    };    const getButtonClass = (optionLetter, optionNumber) => {
+    };const getButtonClass = (optionLetter, optionNumber) => {
         if (!showResult) {
             return '';
         }
@@ -216,24 +201,14 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
                 <p style={{ color: 'white', textAlign: 'center' }}>Loading...</p>
             </div>
         );
-    }
-
-    return (
+    }    return (
         <div className="browse-container">
-            <nav>
-                <div className="left-nav-content">
-                    <i className="fa-solid fa-house"></i>
-                    <i className="fa-solid fa-lightbulb"></i>
-                </div>
-                <img src="/img/text_logo.svg" className="logo" alt="Popdle Logo" />
-                <div className="right-nav-content">
-                    <p id="datetime"></p>
-                    <div id="popup" className="popup">
-                        <p className="logout-text">Logged in as: <strong>{user?.email}</strong></p>                        <button className="logout-button" onClick={handleLogout}>Log Out</button>
-                    </div>
-                    <i className="fa-solid fa-user" id="profile-button" onClick={handleProfileClick}></i>
-                </div>
-            </nav>
+            <Navigation 
+                user={user} 
+                currentPage="daily-quiz" 
+                showStats={showStats} 
+                onToggleStats={toggleStats} 
+            />
             
             <header>
                 <b>Today's question:</b>
@@ -322,15 +297,17 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
                         </>
                     ) : (
                         <p style={{ color: 'white', textAlign: 'center' }}>No question available for today.</p>
-                    )}
-                </section>
+                    )}                </section>
             </main>
             
-            {showStats && (
-                <div className="stats">
-                    <b>Current Statistics</b>
-                    <p>Wins: {userStats?.wins || 0}</p>
-                    <p>Losses: {userStats?.losses || 0}</p>
+            {showStats && userStats && (
+                <div className="stats show">
+                    <b>My Stats</b>
+                    <p>Games Played: {(userStats.wins || 0) + (userStats.losses || 0)}</p>
+                    <p>Games Won: {userStats.wins || 0}</p>
+                    <p>Win Rate: {((userStats.wins || 0) / Math.max((userStats.wins || 0) + (userStats.losses || 0), 1) * 100).toFixed(1)}%</p>
+                    <p>Current Streak: {userStats.currentStreak || 0}</p>
+                    <p>Best Streak: {userStats.bestStreak || 0}</p>
                 </div>
             )}
         </div>

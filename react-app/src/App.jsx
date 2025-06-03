@@ -5,6 +5,8 @@ import Dashboard from './Dashboard.jsx';
 import DailyQuiz from './DailyQuiz.jsx';
 import UsersList from './UsersList.jsx';
 import UserDetail from './UserDetail.jsx';
+import AddSuggestion from './AddSuggestion.jsx';
+import Suggestions from './Suggestions.jsx';
 
 function App() {
     return (
@@ -16,6 +18,8 @@ function App() {
                 <Route path="/daily-quiz" element={<DailyQuiz />} />
                 <Route path="/users" element={<UsersList />} />
                 <Route path="/users/:id" element={<UserDetail />} />
+                <Route path="/suggestions" element={<Suggestions />} />
+                <Route path="/add-suggestion" element={<AddSuggestion />} />
             </Routes>
         </Router>
     );
