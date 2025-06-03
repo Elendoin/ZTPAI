@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -26,11 +27,15 @@ public class User implements UserDetails {    @Id
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_details_id")
-    private UserDetailsEntity userDetailsEntity;
-
-    @OneToOne(cascade = CascadeType.ALL)
+    private UserDetailsEntity userDetailsEntity;    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_stats_id")
     private UserStats userStats;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserSuggestion> userSuggestions;
+
+    @OneToMany(mappedBy = "assignedBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Suggestion> assignedSuggestions;
 
     public User() {}
     
@@ -119,9 +124,23 @@ public class User implements UserDetails {    @Id
 
     public Role getRole() {
         return role;
+    }    public void setRole(Role role) {
+        this.role = role;
     }
 
-    public void setRole(Role role) {
-        this.role = role;
+    public Set<UserSuggestion> getUserSuggestions() {
+        return userSuggestions;
+    }
+
+    public void setUserSuggestions(Set<UserSuggestion> userSuggestions) {
+        this.userSuggestions = userSuggestions;
+    }
+
+    public Set<Suggestion> getAssignedSuggestions() {
+        return assignedSuggestions;
+    }
+
+    public void setAssignedSuggestions(Set<Suggestion> assignedSuggestions) {
+        this.assignedSuggestions = assignedSuggestions;
     }
 }
