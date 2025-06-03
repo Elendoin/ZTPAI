@@ -110,15 +110,12 @@ public class SuggestionService {
         }
 
         boolean wasLiked = userSuggestionService.existsByUserAndSuggestion(user, suggestion);
-        
-        if (wasLiked) {
-            // Unlike: remove relationship and decrease like count
+          if (wasLiked) {
             userSuggestionService.deleteUserSuggestion(user, suggestion);
             if (suggestion.getLikes() > 0) {
                 suggestion.setLikes(suggestion.getLikes() - 1);
             }
         } else {
-            // Like: create relationship and increase like count
             userSuggestionService.createUserSuggestion(user, suggestion);
             suggestion.setLikes(suggestion.getLikes() + 1);
         }
@@ -127,7 +124,7 @@ public class SuggestionService {
         
         String assignedByEmail = suggestion.getAssignedBy() != null ? 
             suggestion.getAssignedBy().getEmail() : "Anonymous";
-        boolean isLiked = !wasLiked; // Toggle the state
+        boolean isLiked = !wasLiked;
         
         return new SuggestionDTO(suggestion, assignedByEmail, isLiked);
     }

@@ -28,9 +28,7 @@ function AddSuggestion() {
                 return;
             }
             setUser(userData);
-            await fetchUserStats(userData.userId);
-        } catch (error) {
-            console.error('Error initializing page:', error);
+            await fetchUserStats(userData.userId);        } catch (error) {
         }
     };
 
@@ -42,9 +40,7 @@ function AddSuggestion() {
                 if (userData.userStats) {
                     setUserStats(userData.userStats);
                 }
-            }
-        } catch (error) {
-            console.error('Error fetching user stats:', error);
+            }        } catch (error) {
         }
     };
 
@@ -61,14 +57,12 @@ function AddSuggestion() {
     };
 
     const handleImageChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
+        const file = e.target.files[0];        if (file) {
             setFormData(prev => ({
                 ...prev,
                 image: file
             }));
             
-            // Create preview
             const reader = new FileReader();
             reader.onload = (e) => {
                 setImagePreview(e.target.result);
@@ -86,11 +80,9 @@ function AddSuggestion() {
         }
 
         setLoading(true);
-        
-        try {
+          try {
             let imagePath = null;
             
-            // Upload image if provided
             if (formData.image) {
                 const imageFormData = new FormData();
                 imageFormData.append('image', formData.image);
@@ -108,10 +100,8 @@ function AddSuggestion() {
                     imagePath = imageData.imagePath;
                 } else {
                     throw new Error('Failed to upload image');
-                }
-            }
+                }            }
             
-            // Create suggestion
             const suggestionData = {
                 title: formData.title.trim(),
                 description: formData.description.trim(),
@@ -133,9 +123,7 @@ function AddSuggestion() {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Failed to create suggestion');
             }
-            
-        } catch (error) {
-            console.error('Error creating suggestion:', error);
+              } catch (error) {
             alert('Failed to create suggestion: ' + error.message);
         } finally {
             setLoading(false);

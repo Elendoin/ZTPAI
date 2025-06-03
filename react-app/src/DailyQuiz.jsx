@@ -35,9 +35,7 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
             await fetchTodaysQuestion();
             
             await checkUserAnswerStatus(userData.userId);
-            
-        } catch (error) {
-            console.error('Error initializing page:', error);
+              } catch (error) {
         } finally {
             setLoading(false);
         }
@@ -47,22 +45,17 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
             if (response.ok) {
                 const questionData = await response.json();                setQuestion(questionData);
             } else {
-                console.error('No question found for today');
             }
         } catch (error) {
-            console.error('Error fetching today\'s question:', error);
         }
-    };    const fetchTodaysQuestionWithAnswer = async () => {
+    };const fetchTodaysQuestionWithAnswer = async () => {
         try {
             const response = await fetch('/api/questions/today/with-answer');
             if (response.ok) {
-                const questionData = await response.json();
-                setQuestion(questionData);
+                const questionData = await response.json();                setQuestion(questionData);
             } else {
-                console.error('No question found for today');
             }
         } catch (error) {
-            console.error('Error fetching today\'s question with answer:', error);
         }
     };const checkUserAnswerStatus = async (userId) => {
         try {
@@ -74,24 +67,18 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
                     const todayLocal = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
                     const lastAnswered = userData.userStats.lastAnswered;
                     
-                    console.log('Debug - Today (Local):', todayLocal);
-                    console.log('Debug - Last answered (from API):', lastAnswered);
-                    
                     let isToday = false;
                     if (lastAnswered) {
                         if (lastAnswered.includes('-')) {
                             const parts = lastAnswered.split('-');
                             if (parts[0].length === 2) {
                                 const convertedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
-                                console.log('Debug - Converted date:', convertedDate);
                                 isToday = convertedDate === todayLocal;
                             } else {
                                 isToday = lastAnswered === todayLocal;
                             }
                         }
                     }
-                    
-                    console.log('Debug - Final comparison result:', isToday);
                       if (isToday) {
                         setHasAnsweredToday(true);
                         setShowResult(true);
@@ -103,9 +90,7 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
                         }
                     }
                 }
-            }
-        } catch (error) {
-            console.error('Error checking user answer status:', error);
+            }        } catch (error) {
         }
     };const handleAnswerSelect = async (optionNumber) => {
         if (hasAnsweredToday || !question) return;        setSelectedAnswer(optionNumber);
@@ -128,11 +113,9 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
                 await fetchTodaysQuestionWithAnswer();
                 
                 await updateUserStats(result.correct, optionLetter);
-            }
-        } catch (error) {
-            console.error('Error checking answer:', error);
+            }        } catch (error) {
         }
-    };    const updateUserStats = async (correct, userAnswer) => {
+    };const updateUserStats = async (correct, userAnswer) => {
         try {
             const userData = JSON.parse(localStorage.getItem('user'));
             
@@ -153,12 +136,9 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
                 if (updatedUser.userStats) {
                     setUserStats(updatedUser.userStats);
                 }
-            }
-
-        } catch (error) {
-            console.error('Error updating user stats:', error);
+            }        } catch (error) {
         }
-    };    const updateDateTime = () => {
+    };const updateDateTime = () => {
         const now = new Date();
         const timeString = now.toLocaleString();
         const dateTimeElement = document.getElementById('datetime');

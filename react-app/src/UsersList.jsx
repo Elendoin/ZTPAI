@@ -13,10 +13,7 @@ const UsersList = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();    useEffect(() => {
         checkAuthAndFetchUsers();
-    }, []);
-
-    useEffect(() => {
-        // Filter users based on search term
+    }, []);    useEffect(() => {
         const filtered = users.filter(user => 
             user.email.toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -62,9 +59,7 @@ const UsersList = () => {
         }
     };    const handleLogout = async () => {        try {
             await authAPI.logout();
-            localStorage.removeItem('user');
-            navigate('/login');        } catch (error) {
-            console.error('Logout failed:', error);
+            localStorage.removeItem('user');            navigate('/login');        } catch (error) {
             localStorage.removeItem('user');
             navigate('/login');
         }

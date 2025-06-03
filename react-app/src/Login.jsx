@@ -12,7 +12,6 @@ function Login() {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);    const navigate = useNavigate();
     const location = useLocation();    useEffect(() => {
-        // Check if user is already authenticated
         checkAuthenticationStatus();
         
         if (location.state?.message) {
@@ -22,21 +21,15 @@ function Login() {
 
     const checkAuthenticationStatus = async () => {
         try {
-            // Check if there's a user in localStorage first
-            const userData = localStorage.getItem('user');
-            if (!userData) return;
+            const userData = localStorage.getItem('user');            if (!userData) return;
 
-            // Verify the session is still valid with the backend
             const authStatus = await authAPI.getStatus();
             if (authStatus.success) {
-                // User is already authenticated, redirect to daily quiz
                 navigate('/daily-quiz');
             } else {
-                // Session is invalid, clear localStorage
                 localStorage.removeItem('user');
             }
         } catch (error) {
-            // If there's an error checking status, clear localStorage
             localStorage.removeItem('user');
         }
     };

@@ -38,13 +38,11 @@ const UserDetail = () => {
   };
   const handleLogout = async () => {    try {
       await authAPI.logout();
-      localStorage.removeItem('user');
-      navigate('/login');    } catch (error) {
-      console.error('Logout failed:', error);
+      localStorage.removeItem('user');      navigate('/login');    } catch (error) {
       localStorage.removeItem('user');
       navigate('/login');
     }
-  };  const handleDeleteUser = async () => {
+  };const handleDeleteUser = async () => {
     if (currentUser?.role !== 'ADMIN') {
       setError('Only administrators can delete users');
       return;
@@ -63,17 +61,13 @@ const UserDetail = () => {
     const confirmMessage = 'Are you sure you want to delete your own profile? This action cannot be undone and you will be logged out immediately.';
     
     if (window.confirm(confirmMessage)) {
-      try {
-        await userAPI.deleteUser(id);
+      try {        await userAPI.deleteUser(id);
         
-        // Call logout API to clear cookies and session
         try {
           await authAPI.logout();
         } catch (logoutError) {
-          console.error('Logout API failed:', logoutError);
         }
         
-        // Clear local storage and redirect to login
         localStorage.removeItem('user');
         navigate('/login', { 
           state: { message: 'Your profile has been successfully deleted.' }
@@ -196,9 +190,7 @@ const UserDetail = () => {
                 </Link>                <Link to="/users">
                   <button className="login-button user-detail-button-large">Users List</button>                </Link>
                 
-                {/* Show delete button based on user permissions */}
-                {currentUser?.userId.toString() === id ? (
-                  // User viewing their own profile - show "Delete My Profile" button
+                {/* Show delete button based on user permissions */}                {currentUser?.userId.toString() === id ? (
                   <button 
                     onClick={handleDeleteOwnProfile}
                     className="register-button user-delete-button user-detail-button-small"
@@ -207,7 +199,6 @@ const UserDetail = () => {
                     Delete My Profile
                   </button>
                 ) : currentUser?.role === 'ADMIN' ? (
-                  // Admin viewing another user's profile - show "Delete User" button
                   <button 
                     onClick={handleDeleteUser}
                     className="register-button user-delete-button user-detail-button-small"
@@ -216,7 +207,6 @@ const UserDetail = () => {
                     Delete User
                   </button>
                 ) : (
-                  // Regular user viewing another user's profile - show disabled button
                   <button 
                     className="register-button user-delete-button user-detail-button-small user-detail-button-disabled"
                     disabled

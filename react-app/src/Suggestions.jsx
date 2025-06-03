@@ -16,10 +16,7 @@ function Suggestions() {
 
     useEffect(() => {
         initializePage();
-    }, []);
-
-    useEffect(() => {
-        // Filter suggestions based on search term
+    }, []);    useEffect(() => {
         if (searchTerm.trim() === '') {
             setFilteredSuggestions(suggestions);
         } else {
@@ -38,25 +35,17 @@ function Suggestions() {
                 navigate('/login');
                 return;
             }            setUser(userData);
-            console.log('Debug - Full user object:', userData);
-            console.log('Debug - All user object keys:', Object.keys(userData));
 
             await fetchSuggestions();
-            await fetchUserStats(userData.userId);
-            
-        } catch (error) {
-            console.error('Error initializing page:', error);
+            await fetchUserStats(userData.userId);        } catch (error) {
         } finally {
             setLoading(false);
         }
     };    const fetchSuggestions = async () => {
         try {
             const suggestionsData = await suggestionAPI.getAllSuggestions();
-            console.log('Debug suggestions data:', suggestionsData);
             setSuggestions(suggestionsData);
-            setFilteredSuggestions(suggestionsData);
-        } catch (error) {
-            console.error('Error fetching suggestions:', error);
+            setFilteredSuggestions(suggestionsData);        } catch (error) {
         }
     };
 
@@ -68,9 +57,7 @@ function Suggestions() {
                 if (userData.userStats) {
                     setUserStats(userData.userStats);
                 }
-            }
-        } catch (error) {
-            console.error('Error fetching user stats:', error);
+            }        } catch (error) {
         }
     };
 
@@ -88,52 +75,36 @@ function Suggestions() {
         try {
             const updatedSuggestion = await suggestionAPI.likeSuggestion(suggestionId);
             
-            // Update the specific suggestion in the state
             setSuggestions(prevSuggestions => 
                 prevSuggestions.map(suggestion => 
                     suggestion.id === suggestionId ? updatedSuggestion : suggestion
                 )
             );
             
-            // Update filtered suggestions as well
             setFilteredSuggestions(prevFiltered => 
                 prevFiltered.map(suggestion => 
                     suggestion.id === suggestionId ? updatedSuggestion : suggestion
                 )
-            );
-        } catch (error) {
-            console.error('Error liking suggestion:', error);
+            );        } catch (error) {
         }
     };
 
     const handleDeleteSuggestion = async (suggestionId) => {
         if (!window.confirm('Are you sure you want to delete this suggestion?')) {
             return;
-        }
-
-        try {
+        }        try {
             await suggestionAPI.deleteSuggestion(suggestionId);
             
-            // Remove the suggestion from both state arrays
             setSuggestions(prevSuggestions => 
                 prevSuggestions.filter(suggestion => suggestion.id !== suggestionId)
             );
             setFilteredSuggestions(prevFiltered => 
                 prevFiltered.filter(suggestion => suggestion.id !== suggestionId)
-            );
-        } catch (error) {
-            console.error('Error deleting suggestion:', error);
+            );        } catch (error) {
             alert('Failed to delete suggestion. Please try again.');
         }
-    };    const canDeleteSuggestion = (suggestion) => {
+    };const canDeleteSuggestion = (suggestion) => {
         if (!user) return false;
-        console.log('Debug canDeleteSuggestion:', {
-            userRole: user.role,
-            userEmail: user.email,
-            suggestionEmail: suggestion.assignedByEmail,
-            isAdmin: user.role === 'ADMIN',
-            isOwner: suggestion.assignedByEmail === user.email
-        });
         return user.role === 'ADMIN' || suggestion.assignedByEmail === user.email;
     };
 

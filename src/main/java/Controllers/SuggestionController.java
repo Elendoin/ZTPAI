@@ -102,22 +102,17 @@ public class SuggestionController {
 
             if (title == null || title.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("Title is required");
-            }
-
-            String imagePath = null;
+            }            String imagePath = null;
             if (file != null && !file.isEmpty()) {
-                // Validate file type
                 String contentType = file.getContentType();
                 if (contentType == null || (!contentType.startsWith("image/"))) {
                     return ResponseEntity.badRequest().body("Invalid file type. Only images are allowed.");
                 }
 
-                // Validate file size (5MB limit)
                 if (file.getSize() > 5 * 1024 * 1024) {
                     return ResponseEntity.badRequest().body("File size too large. Maximum size is 5MB.");
                 }
 
-                // Generate unique filename
                 String originalFilename = file.getOriginalFilename();
                 String fileExtension = "";
                 if (originalFilename != null && originalFilename.contains(".")) {
@@ -125,7 +120,6 @@ public class SuggestionController {
                 }
                 String fileName = UUID.randomUUID().toString() + fileExtension;
 
-                // Save file to react-app/public/img directory
                 Path uploadPath = Paths.get("react-app/public/img");
                 if (!Files.exists(uploadPath)) {
                     Files.createDirectories(uploadPath);
@@ -134,7 +128,7 @@ public class SuggestionController {
                 Path filePath = uploadPath.resolve(fileName);
                 Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
                 
-                imagePath = fileName; // Just store the filename, not the full path
+                imagePath = fileName;
             }
 
             Suggestion newSuggestion = suggestionService.createSuggestion(title, description, imagePath, currentUser);
@@ -153,12 +147,10 @@ public class SuggestionController {
             String currentUserEmail = auth.getName();
             User currentUser = userService.getUserByEmail(currentUserEmail);
             
-            Suggestion suggestion = suggestionService.getSuggestionById(id);
-            if (suggestion == null) {
+            Suggestion suggestion = suggestionService.getSuggestionById(id);            if (suggestion == null) {
                 return ResponseEntity.status(404).body("Suggestion not found!");
             }
             
-            // Allow update if user is admin OR if user is the one who created the suggestion
             if (!currentUser.getRole().getValue().equals("ADMIN") && 
                 !suggestion.getAssignedBy().getId().equals(currentUser.getId())) {
                 return ResponseEntity.status(403).body("You can only update your own suggestions or you need admin privileges");

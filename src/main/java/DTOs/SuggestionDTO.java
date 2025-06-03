@@ -23,10 +23,8 @@ public class SuggestionDTO {
         this.image = suggestion.getImage();
         this.likes = suggestion.getLikes();
         this.assignedByEmail = assignedByEmail;
-        this.isLiked = isLiked;
-    }
+        this.isLiked = isLiked;    }
 
-    // Getters and Setters
     public Long getId() {
         return id;
     }

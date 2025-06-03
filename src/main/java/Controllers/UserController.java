@@ -66,14 +66,11 @@ public class UserController {@Autowired
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = auth.getName();
             User currentUser = userService.getUserByEmail(currentUserEmail);
-            
-            if (currentUser.getRole().getValue().equals("ADMIN") || currentUser.getId().equals(id)) {
-                // Check if user is deleting their own profile
+              if (currentUser.getRole().getValue().equals("ADMIN") || currentUser.getId().equals(id)) {
                 boolean isDeletingOwnProfile = currentUser.getId().equals(id);
                 
                 userService.deleteUser(id);
                 
-                // If user is deleting their own profile, clear the cookies to log them out
                 if (isDeletingOwnProfile) {
                     Cookie jwtCookie = new Cookie(jwtCookieName, null);
                     jwtCookie.setHttpOnly(true);

@@ -24,9 +24,7 @@ function Navigation({ user, currentPage = 'daily-quiz', showStats, onToggleStats
         try {
             await authAPI.logout();
             localStorage.removeItem('user');
-            navigate('/login');
-        } catch (error) {
-            console.error('Logout failed:', error);
+            navigate('/login');        } catch (error) {
             localStorage.removeItem('user');
             navigate('/login');
         }
