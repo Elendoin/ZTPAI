@@ -81,7 +81,7 @@ Popdle to aplikacja webowa do codziennych quizów z funkcjonalnością społeczn
 - **React 18**
 - **Vite**
 
-Wybór technologii dokonany na podstawie trendów i braku ogólnego doświadczenia.
+Wybór technologii dokonany na podstawie ciekawości ich działania i trendów.
 
 
 ## Instrukcje Uruchomienia
@@ -97,3 +97,7 @@ Wybór technologii dokonany na podstawie trendów i braku ogólnego doświadczen
    npm install
    npm run dev
    Frontend będzie dostępny pod adresem: `http://localhost:5173`
+
+
+## ERD
+![ERD](/githubimg/ERD.png)
