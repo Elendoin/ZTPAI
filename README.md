@@ -87,15 +87,15 @@ Wybór technologii dokonany na podstawie ciekawości ich działania i trendów.
 ## Instrukcje Uruchomienia
 
 ### Uruchomienie Backendu
-   .\gradlew build
-   .\gradlew bootRun
-   Backend będzie dostępny pod adresem: `http://localhost:8080`
+   ./gradlew build\
+   ./gradlew bootRun\
+   Backend będzie dostępny pod adresem: `http://localhost:8080`\
    Swagger UI: `http://localhost:8080/swagger-ui.html`
 
 ### Uruchomienie Frontendu
-   cd react-app
-   npm install
-   npm run dev
+   cd react-app\
+   npm install\
+   npm run dev\
    Frontend będzie dostępny pod adresem: `http://localhost:5173`
 
 
