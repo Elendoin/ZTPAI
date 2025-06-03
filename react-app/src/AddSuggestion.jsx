@@ -158,18 +158,18 @@ function AddSuggestion() {
                 showStats={showStats} 
                 onToggleStats={toggleStats} 
             />
-            
-            <header>
-                <div className="add-suggestion-header">
-                    <b>Add New Suggestion</b>
+              <header>
+                <div className="add-suggestion-header-text">
+                    Add New Suggestion
                 </div>
             </header>
             
-            <main className="add-suggestion-main">
-                <form className="suggestion-form" onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="title">Title:</label>
+            <main className="add-suggestion-container">
+                <form className="add-suggestion-form" onSubmit={handleSubmit}>
+                    <div className="add-suggestion-form-group">
+                        <label className="add-suggestion-label" htmlFor="title">Title:</label>
                         <input
+                            className="add-suggestion-input"
                             type="text"
                             id="title"
                             name="title"
@@ -181,9 +181,10 @@ function AddSuggestion() {
                         />
                     </div>
                     
-                    <div className="form-group">
-                        <label htmlFor="description">Description:</label>
+                    <div className="add-suggestion-form-group">
+                        <label className="add-suggestion-label" htmlFor="description">Description:</label>
                         <textarea
+                            className="add-suggestion-textarea"
                             id="description"
                             name="description"
                             value={formData.description}
@@ -195,9 +196,10 @@ function AddSuggestion() {
                         />
                     </div>
                     
-                    <div className="form-group">
-                        <label htmlFor="image">Image (optional):</label>
+                    <div className="add-suggestion-form-group">
+                        <label className="add-suggestion-label" htmlFor="image">Image (optional):</label>
                         <input
+                            className="add-suggestion-file-input"
                             type="file"
                             id="image"
                             name="image"
@@ -205,16 +207,16 @@ function AddSuggestion() {
                             accept="image/*"
                         />
                         {imagePreview && (
-                            <div className="image-preview">
-                                <img src={imagePreview} alt="Preview" />
+                            <div className="add-suggestion-image-preview">
+                                <img className="add-suggestion-preview-image" src={imagePreview} alt="Preview" />
                             </div>
                         )}
                     </div>
                     
-                    <div className="form-actions">
+                    <div className="add-suggestion-form-actions">
                         <button 
                             type="button" 
-                            className="cancel-button" 
+                            className="add-suggestion-cancel-button" 
                             onClick={handleCancel}
                             disabled={loading}
                         >
@@ -222,7 +224,7 @@ function AddSuggestion() {
                         </button>
                         <button 
                             type="submit" 
-                            className="submit-button" 
+                            className="add-suggestion-submit-button" 
                             disabled={loading}
                         >
                             {loading ? 'Creating...' : 'Create Suggestion'}

@@ -127,46 +127,44 @@ function Suggestions() {
                 showStats={showStats} 
                 onToggleStats={toggleStats} 
             />
-            
-            <header>
-                <div className="browse-tools">
-                    <b>Current suggestions:</b>
-                    <div className="browse-searchbar">
-                        <input 
-                            placeholder="Search for a suggestion"
-                            value={searchTerm}
-                            onChange={handleSearchChange}
-                        />
-                    </div>
-                    <button className="upload-button" onClick={handleAddSuggestion}>
-                        <i className="fa-solid fa-upload"></i>
-                    </button>
+              <header className="suggestions-header">
+                <b className="suggestions-title">Current suggestions:</b>
+                <div className="suggestions-search-container">
+                    <input 
+                        className="suggestions-search-input"
+                        placeholder="Search for a suggestion"
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                    />
                 </div>
+                <button className="suggestions-add-button" onClick={handleAddSuggestion}>
+                    <i className="fa-solid fa-upload"></i>
+                </button>
             </header>
             
-            <main className="suggestions-main">
-                <section className="suggestions" id="suggestions">
+            <main className="suggestions-content">
+                <div className="suggestions-grid">
                     {filteredSuggestions.length > 0 ? (
                         filteredSuggestions.map(suggestion => (
-                            <div key={suggestion.id} className="suggestions-container">
-                                <h2>{suggestion.title}</h2>
+                            <div key={suggestion.id} className="suggestion-card">
+                                <h2 className="suggestion-card-title">{suggestion.title}</h2>
                                 {suggestion.image && (
                                     <img 
                                         src={`/img/${suggestion.image}`} 
-                                        className="franchise-images" 
+                                        className="suggestion-card-image" 
                                         alt={suggestion.title}
                                         onError={(e) => {
                                             e.target.style.display = 'none';
                                         }}
                                     />
                                 )}
-                                <p>{suggestion.description}</p>
-                                <div className="suggestion-actions">
+                                <p className="suggestion-card-description">{suggestion.description}</p>
+                                <div className="suggestion-card-footer">
                                     <button 
-                                        className={`like-button ${suggestion.isLiked ? 'liked' : ''}`}
+                                        className={`suggestion-like-button ${suggestion.isLiked ? 'liked' : ''}`}
                                         onClick={() => handleLikeSuggestion(suggestion.id)}
                                     >
-                                        <i className={`fa-solid fa-heart ${suggestion.isLiked ? 'liked-heart' : ''}`}></i> 
+                                        <i className={`fa-solid fa-heart suggestion-like-icon ${suggestion.isLiked ? 'liked-heart' : ''}`}></i> 
                                         {suggestion.likes || 0}
                                     </button>
                                     <span className="suggestion-author">
@@ -176,13 +174,13 @@ function Suggestions() {
                             </div>
                         ))
                     ) : (
-                        <div className="no-suggestions">
-                            <p style={{ color: 'white', textAlign: 'center' }}>
+                        <div className="suggestions-empty">
+                            <p className="suggestions-empty-text">
                                 {searchTerm ? 'No suggestions found matching your search.' : 'No suggestions available yet.'}
                             </p>
                         </div>
                     )}
-                </section>
+                </div>
             </main>
             
             {showStats && userStats && (
