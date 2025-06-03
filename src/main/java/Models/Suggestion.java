@@ -17,11 +17,13 @@ public class Suggestion {
     
     @Column(columnDefinition = "TEXT")
     private String description;
-    
-    @Column(name = "created_at")
+      @Column(name = "created_at")
     private LocalDateTime createdAt;
     
     private String image;
+    
+    @Column(nullable = false)
+    private Integer likes = 0;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_assigned_by")
@@ -69,9 +71,16 @@ public class Suggestion {
     public String getImage() {
         return image;
     }
-    
-    public void setImage(String image) {
+      public void setImage(String image) {
         this.image = image;
+    }
+    
+    public Integer getLikes() {
+        return likes;
+    }
+    
+    public void setLikes(Integer likes) {
+        this.likes = likes;
     }
     
     public User getAssignedBy() {
