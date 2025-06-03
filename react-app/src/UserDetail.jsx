@@ -58,6 +58,23 @@ const UserDetail = () => {
         setError(error.message || 'Failed to delete user');
       }
     }
+  };
+
+  const handleDeleteOwnProfile = async () => {
+    const confirmMessage = 'Are you sure you want to delete your own profile? This action cannot be undone and you will be logged out immediately.';
+    
+    if (window.confirm(confirmMessage)) {
+      try {
+        await userAPI.deleteUser(id);
+        // Clear user session and redirect to login
+        localStorage.removeItem('user');
+        navigate('/login', { 
+          state: { message: 'Your profile has been successfully deleted.' }
+        });
+      } catch (error) {
+        setError(error.message || 'Failed to delete your profile');
+      }
+    }
   };if (loading) {
     return (
       <div className="container">
@@ -166,25 +183,34 @@ const UserDetail = () => {
             )}<div className="user-navigation user-detail-navigation-compact">              <div className="user-navigation-buttons user-detail-navigation-buttons-compact">
                 <Link to="/daily-quiz">
                   <button className="login-button user-detail-button-large">Back to Daily Quiz</button>
-                </Link>
-                <Link to="/users">
-                  <button className="login-button user-detail-button-large">Back to Users List</button>
-                </Link>                <Link to="/dashboard">
-                  <button className="login-button user-detail-button-small">Dashboard</button>
-                </Link>
-                {currentUser?.role === 'ADMIN' && (
+                </Link>                <Link to="/users">
+                  <button className="login-button user-detail-button-large">Users List</button>                </Link>
+                
+                {/* Show delete button based on user permissions */}
+                {currentUser?.userId.toString() === id ? (
+                  // User viewing their own profile - show "Delete My Profile" button
+                  <button 
+                    onClick={handleDeleteOwnProfile}
+                    className="register-button user-delete-button user-detail-button-small"
+                    title="Delete your own profile"
+                  >
+                    Delete My Profile
+                  </button>
+                ) : currentUser?.role === 'ADMIN' ? (
+                  // Admin viewing another user's profile - show "Delete User" button
                   <button 
                     onClick={handleDeleteUser}
                     className="register-button user-delete-button user-detail-button-small"
-                    title="Only admins can delete users"
+                    title="Admin: Delete this user"
                   >
                     Delete User
                   </button>
-                )}                {currentUser?.role !== 'ADMIN' && (
+                ) : (
+                  // Regular user viewing another user's profile - show disabled button
                   <button 
                     className="register-button user-delete-button user-detail-button-small user-detail-button-disabled"
                     disabled
-                    title="Only admins can delete users"
+                    title="Only admins can delete other users"
                   >
                     Delete User
                   </button>

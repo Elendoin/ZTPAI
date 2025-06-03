@@ -362,3 +362,55 @@
     cursor: not-allowed;
     background-color: #ccc;
 }
+
+/* Search functionality styles */
+.user-search-container {
+    margin-bottom: 1.5em;
+}
+
+.user-list-search-compact {
+    margin-bottom: 1em;
+}
+
+.user-search-input {
+    width: 100%;
+    padding: 0.75em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+    background-color: white;
+    color: black;
+}
+
+.user-list-search-input-compact {
+    padding: 0.6em;
+    font-size: 0.9em;
+    margin-bottom: 0.5em;
+}
+
+.user-search-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.user-search-results {
+    font-size: 0.9em;
+    color: #666;
+    text-align: center;
+    font-style: italic;
+}
+
+.user-list-search-results-compact {
+    font-size: 0.8em;
+    margin-top: 0.3em;
+    margin-bottom: 0.5em;
+}
+
+/* Enhanced email display */
+.user-list-email-compact strong {
+    font-size: 1.1em;
+    color: #2c3e50;
+    font-family: inherit;
+    font-weight: bold;
+}
