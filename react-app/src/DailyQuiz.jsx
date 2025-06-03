@@ -282,9 +282,9 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
                                     ) : (
                                         <>
                                             {isCorrect ? 
-                                                <p style={{ color: 'green', fontSize: '1.2em', fontWeight: 'bold' }}>✅ Correct!</p> : 
+                                                <p style={{ color: 'green', fontSize: '1.2em', fontWeight: 'bold' }}>Correct!</p> : 
                                                 <>
-                                                    <p style={{ color: 'red', fontSize: '1.2em', fontWeight: 'bold' }}>❌ Incorrect!</p>
+                                                    <p style={{ color: 'red', fontSize: '1.2em', fontWeight: 'bold' }}>Incorrect!</p>
                                                     <p style={{ color: 'white', fontSize: '1em' }}>
                                                         The correct answer was: <span style={{ color: 'green', fontWeight: 'bold' }}>{question.correctAnswer}</span>
                                                     </p>
