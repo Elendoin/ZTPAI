@@ -1,6 +1,7 @@
 package Models;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "user_suggestions")
@@ -11,11 +12,13 @@ public class UserSuggestion {
     private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_user")
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_suggestion")
+    @JoinColumn(name = "suggestion_id")
+    @JsonBackReference
     private Suggestion suggestion;
     
     public UserSuggestion() {}

@@ -14,9 +14,10 @@ public class UserStats {
 
     @Column(nullable = false)
     private int wins = 0;
-    
-    @Column(nullable = false)
-    private int losses = 0;    @JsonFormat(pattern = "dd-MM-yyyy")
+      @Column(nullable = false)
+    private int losses = 0;
+
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate lastAnswered;
 
     @Column(length = 1)
@@ -51,11 +52,11 @@ public class UserStats {
 
     public void setLosses(int losses) {
         this.losses = losses;
+    }    public LocalDate getLastAnswered() {
+        return lastAnswered;
     }
 
-    public LocalDate getLastAnswered() {
-        return lastAnswered;
-    }    public void setLastAnswered(LocalDate lastAnswered) {
+    public void setLastAnswered(LocalDate lastAnswered) {
         this.lastAnswered = lastAnswered;
     }
 

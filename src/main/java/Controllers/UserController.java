@@ -33,9 +33,10 @@ public class UserController {
         User user = userService.getUserById(id);
         if(user == null) {
             return ResponseEntity.status(404).body("User not found!");
-        }
-        return ResponseEntity.ok(user);
-    }    @DeleteMapping("/{id}")
+        }        return ResponseEntity.ok(user);
+    }
+
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id){
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -48,10 +49,11 @@ public class UserController {
             } else {
                 return ResponseEntity.status(403).body("You can only delete your own profile or you need admin privileges");
             }
-        } catch (Exception e) {
-            return ResponseEntity.status(404).body("User not found!");
+        } catch (Exception e) {            return ResponseEntity.status(404).body("User not found!");
         }
-    }@PostMapping("/{id}/answer")
+    }
+
+    @PostMapping("/{id}/answer")
     public ResponseEntity<?> updateUserAnswer(@PathVariable Long id, @RequestBody Map<String, Object> answerRequest) {
         try {
             Boolean isCorrect = (Boolean) answerRequest.get("correct");
@@ -59,9 +61,9 @@ public class UserController {
             
             if (isCorrect == null) {
                 return ResponseEntity.badRequest().body("Missing 'correct' field");
+            }            if (userAnswer == null) {
+                return ResponseEntity.badRequest().body("Missing 'answer' field");
             }
-            if (userAnswer == null) {
-                return ResponseEntity.badRequest().body("Missing 'answer' field");            }
 
             if (userService.hasUserAnsweredToday(id)) {
                 return ResponseEntity.badRequest().body("User has already answered today");

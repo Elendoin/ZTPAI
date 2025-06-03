@@ -28,23 +28,25 @@ public class UserService {
         User user = userRepository.findById(id);
         if (user == null) {
             throw new Exception("User not found");
-        }
-        userRepository.delete(user);
-    }    public User updateUserStats(long userId, boolean isCorrect, String userAnswer) throws Exception {
+        }        userRepository.delete(user);
+    }
+
+    public User updateUserStats(long userId, boolean isCorrect, String userAnswer) throws Exception {
         User user = userRepository.findById(userId);
         if (user == null) {
             throw new Exception("User not found");
         }
 
-        UserStats stats = user.getUserStats();
-        if (stats == null) {
+        UserStats stats = user.getUserStats();        if (stats == null) {
             stats = new UserStats();
-            user.setUserStats(stats);        }
+            user.setUserStats(stats);
+        }
 
         if (isCorrect) {
             stats.setWins(stats.getWins() + 1);
         } else {
-            stats.setLosses(stats.getLosses() + 1);        }
+            stats.setLosses(stats.getLosses() + 1);
+        }
 
         stats.setLatestAnswer(userAnswer);
         stats.setLastAnswered(LocalDate.now());
