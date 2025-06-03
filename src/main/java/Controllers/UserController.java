@@ -8,16 +8,20 @@ import org.springframework.web.bind.annotation.*;
 import Models.User;
 import Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
-public class UserController {
-
-    @Autowired
+public class UserController {    @Autowired
     private UserService userService;
+
+    @Value("${jwt.cookie.name}")
+    private String jwtCookieName;
 
     @GetMapping
     public ResponseEntity<?> getUsers(){
@@ -34,17 +38,29 @@ public class UserController {
         if(user == null) {
             return ResponseEntity.status(404).body("User not found!");
         }        return ResponseEntity.ok(user);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id){
+    }    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long id, HttpServletResponse response){
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String currentUserEmail = auth.getName();
             User currentUser = userService.getUserByEmail(currentUserEmail);
             
             if (currentUser.getRole().getValue().equals("ADMIN") || currentUser.getId().equals(id)) {
+                // Check if user is deleting their own profile
+                boolean isDeletingOwnProfile = currentUser.getId().equals(id);
+                
                 userService.deleteUser(id);
+                
+                // If user is deleting their own profile, clear the cookies to log them out
+                if (isDeletingOwnProfile) {
+                    Cookie jwtCookie = new Cookie(jwtCookieName, null);
+                    jwtCookie.setHttpOnly(true);
+                    jwtCookie.setSecure(false);
+                    jwtCookie.setPath("/");
+                    jwtCookie.setMaxAge(0);
+                    response.addCookie(jwtCookie);
+                }
+                
                 return ResponseEntity.ok("User successfully deleted! ID: " + id);
             } else {
                 return ResponseEntity.status(403).body("You can only delete your own profile or you need admin privileges");

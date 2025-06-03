@@ -59,14 +59,21 @@ const UserDetail = () => {
       }
     }
   };
-
   const handleDeleteOwnProfile = async () => {
     const confirmMessage = 'Are you sure you want to delete your own profile? This action cannot be undone and you will be logged out immediately.';
     
     if (window.confirm(confirmMessage)) {
       try {
         await userAPI.deleteUser(id);
-        // Clear user session and redirect to login
+        
+        // Call logout API to clear cookies and session
+        try {
+          await authAPI.logout();
+        } catch (logoutError) {
+          console.error('Logout API failed:', logoutError);
+        }
+        
+        // Clear local storage and redirect to login
         localStorage.removeItem('user');
         navigate('/login', { 
           state: { message: 'Your profile has been successfully deleted.' }
