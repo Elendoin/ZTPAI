@@ -97,13 +97,21 @@ export const suggestionAPI = {
       throw error.response?.data || { message: 'Failed to fetch suggestions' };
     }
   },
-
   likeSuggestion: async (suggestionId) => {
     try {
       const response = await api.post(`/suggestions/${suggestionId}/like`);
       return response.data;
     } catch (error) {
       throw error.response?.data || { message: 'Failed to like suggestion' };
+    }
+  },
+
+  deleteSuggestion: async (suggestionId) => {
+    try {
+      const response = await api.delete(`/suggestions/${suggestionId}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || { message: 'Failed to delete suggestion' };
     }
   },
 };

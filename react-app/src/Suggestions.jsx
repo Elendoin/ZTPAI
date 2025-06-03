@@ -37,8 +37,9 @@ function Suggestions() {
             if (!userData) {
                 navigate('/login');
                 return;
-            }
-            setUser(userData);
+            }            setUser(userData);
+            console.log('Debug - Full user object:', userData);
+            console.log('Debug - All user object keys:', Object.keys(userData));
 
             await fetchSuggestions();
             await fetchUserStats(userData.userId);
@@ -51,6 +52,7 @@ function Suggestions() {
     };    const fetchSuggestions = async () => {
         try {
             const suggestionsData = await suggestionAPI.getAllSuggestions();
+            console.log('Debug suggestions data:', suggestionsData);
             setSuggestions(suggestionsData);
             setFilteredSuggestions(suggestionsData);
         } catch (error) {
@@ -104,6 +106,37 @@ function Suggestions() {
         }
     };
 
+    const handleDeleteSuggestion = async (suggestionId) => {
+        if (!window.confirm('Are you sure you want to delete this suggestion?')) {
+            return;
+        }
+
+        try {
+            await suggestionAPI.deleteSuggestion(suggestionId);
+            
+            // Remove the suggestion from both state arrays
+            setSuggestions(prevSuggestions => 
+                prevSuggestions.filter(suggestion => suggestion.id !== suggestionId)
+            );
+            setFilteredSuggestions(prevFiltered => 
+                prevFiltered.filter(suggestion => suggestion.id !== suggestionId)
+            );
+        } catch (error) {
+            console.error('Error deleting suggestion:', error);
+            alert('Failed to delete suggestion. Please try again.');
+        }
+    };    const canDeleteSuggestion = (suggestion) => {
+        if (!user) return false;
+        console.log('Debug canDeleteSuggestion:', {
+            userRole: user.role,
+            userEmail: user.email,
+            suggestionEmail: suggestion.assignedByEmail,
+            isAdmin: user.role === 'ADMIN',
+            isOwner: suggestion.assignedByEmail === user.email
+        });
+        return user.role === 'ADMIN' || suggestion.assignedByEmail === user.email;
+    };
+
     if (loading) {
         return (
             <div className="browse-container">
@@ -152,13 +185,24 @@ function Suggestions() {
                                     />
                                 )}
                                 <p className="suggestion-card-description">{suggestion.description}</p>                                <div className="suggestion-card-footer">
-                                    <button 
-                                        className={`suggestion-like-button ${suggestion.isLiked ? 'liked' : ''}`}
-                                        onClick={() => handleLikeSuggestion(suggestion.id)}
-                                    >
-                                        <i className={`fa-solid fa-heart suggestion-like-icon ${suggestion.isLiked ? 'liked-heart' : ''}`}></i> 
-                                        {suggestion.likes || 0}
-                                    </button>
+                                    <div className="suggestion-actions">
+                                        <button 
+                                            className={`suggestion-like-button ${suggestion.isLiked ? 'liked' : ''}`}
+                                            onClick={() => handleLikeSuggestion(suggestion.id)}
+                                        >
+                                            <i className={`fa-solid fa-heart suggestion-like-icon ${suggestion.isLiked ? 'liked-heart' : ''}`}></i> 
+                                            {suggestion.likes || 0}
+                                        </button>
+                                        {canDeleteSuggestion(suggestion) && (
+                                            <button 
+                                                className="suggestion-delete-button"
+                                                onClick={() => handleDeleteSuggestion(suggestion.id)}
+                                                title="Delete suggestion"
+                                            >
+                                                <i className="fa-solid fa-trash"></i>
+                                            </button>
+                                        )}
+                                    </div>
                                     <span className="suggestion-author">
                                         by {suggestion.assignedByEmail || 'Anonymous'}
                                     </span>

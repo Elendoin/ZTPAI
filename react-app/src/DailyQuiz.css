@@ -427,6 +427,38 @@ main {
     font-size: 1.1em;
 }
 
+.suggestion-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.suggestion-delete-button {
+    background: linear-gradient(45deg, #dc3545, #c82333);
+    border: 1px solid #dc3545;
+    border-radius: 20px;
+    padding: 8px 12px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    width: 36px;
+    height: 36px;
+}
+
+.suggestion-delete-button:hover {
+    background: linear-gradient(45deg, #c82333, #bd2130);
+    border-color: #c82333;
+    transform: scale(1.05);
+}
+
+.suggestion-delete-button i {
+    font-size: 1em;
+}
+
 .suggestion-author {
     color: #888;
     font-size: 0.85em;
