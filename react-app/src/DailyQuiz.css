@@ -627,6 +627,152 @@ main {
     box-shadow: none;
 }
 
+/* Compact Add Suggestion Styles */
+.add-suggestion-container-compact {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.add-suggestion-form-compact {
+    background: linear-gradient(145deg, #2a2a2a, #1f1f1f);
+    border: 1px solid #333;
+    border-radius: 15px;
+    padding: 25px;
+    width: 100%;
+    max-width: 450px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.add-suggestion-form-group-compact {
+    margin-bottom: 18px;
+}
+
+.add-suggestion-label-compact {
+    display: block;
+    color: white;
+    margin-bottom: 6px;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.add-suggestion-input-compact,
+.add-suggestion-textarea-compact {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #333;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+    color: white;
+    font-size: 0.9em;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.add-suggestion-input-compact:focus,
+.add-suggestion-textarea-compact:focus {
+    outline: none;
+    border-color: #646cff;
+    box-shadow: 0 0 8px rgba(100, 108, 255, 0.3);
+    background-color: #222;
+}
+
+.add-suggestion-textarea-compact {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.4;
+}
+
+.add-suggestion-file-input-compact {
+    width: 100%;
+    padding: 10px;
+    border: 2px dashed #333;
+    border-radius: 8px;
+    background-color: #1a1a1a;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-size: 0.9em;
+}
+
+.add-suggestion-file-input-compact:hover {
+    border-color: #646cff;
+    background-color: #222;
+}
+
+.add-suggestion-image-preview-compact {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.add-suggestion-preview-image-compact {
+    max-width: 200px;
+    max-height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #333;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+}
+
+.add-suggestion-form-actions-compact {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #333;
+}
+
+.add-suggestion-button {
+    padding: 12px 24px;
+    border: 1px solid #FFFFFF;
+    border-radius: 25px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 100px;
+    text-align: center;
+}
+
+.add-suggestion-cancel-button-compact {
+    background-color: #000000;
+    color: white;
+}
+
+.add-suggestion-cancel-button-compact:hover:not(:disabled) {
+    background-color: #FFFFFF;
+    color: black;
+}
+
+.add-suggestion-submit-button-compact {
+    background-color: #000000;
+    color: white;
+}
+
+.add-suggestion-submit-button-compact:hover:not(:disabled) {
+    background-color: #FFFFFF;
+    color: black;
+}
+
+.add-suggestion-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background-color: #333;
+    border-color: #333;
+}
+
+.add-suggestion-button:disabled:hover {
+    background-color: #333;
+    color: white;
+}
+
 /* Responsive design for suggestions */
 @media (max-width: 768px) {
     .suggestions-header {
@@ -652,5 +798,22 @@ main {
     
     .add-suggestion-form-actions {
         flex-direction: column;
+    }
+}
+
+/* Responsive design for compact add suggestion */
+@media (max-width: 768px) {
+    .add-suggestion-form-compact {
+        padding: 20px;
+        margin: 0 10px;
+        max-width: 100%;
+    }
+    
+    .add-suggestion-form-actions-compact {
+        flex-direction: column;
+    }
+    
+    .add-suggestion-button {
+        width: 100%;
     }
 }

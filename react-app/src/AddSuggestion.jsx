@@ -145,19 +145,17 @@ function AddSuggestion() {
                 currentPage="add-suggestion" 
                 showStats={showStats} 
                 onToggleStats={toggleStats} 
-            />
-              <header>
-                <div className="add-suggestion-header-text">
+            />              <header>
+                <div className="add-suggestion-header-text-compact">
                     Add New Suggestion
                 </div>
             </header>
-            
-            <main className="add-suggestion-container">
-                <form className="add-suggestion-form" onSubmit={handleSubmit}>
-                    <div className="add-suggestion-form-group">
-                        <label className="add-suggestion-label" htmlFor="title">Title:</label>
+              <main className="add-suggestion-container-compact">
+                <form className="add-suggestion-form-compact" onSubmit={handleSubmit}>
+                    <div className="add-suggestion-form-group-compact">
+                        <label className="add-suggestion-label-compact" htmlFor="title">Title:</label>
                         <input
-                            className="add-suggestion-input"
+                            className="add-suggestion-input-compact"
                             type="text"
                             id="title"
                             name="title"
@@ -169,25 +167,25 @@ function AddSuggestion() {
                         />
                     </div>
                     
-                    <div className="add-suggestion-form-group">
-                        <label className="add-suggestion-label" htmlFor="description">Description:</label>
+                    <div className="add-suggestion-form-group-compact">
+                        <label className="add-suggestion-label-compact" htmlFor="description">Description:</label>
                         <textarea
-                            className="add-suggestion-textarea"
+                            className="add-suggestion-textarea-compact"
                             id="description"
                             name="description"
                             value={formData.description}
                             onChange={handleInputChange}
                             placeholder="Enter suggestion description"
-                            rows={6}
+                            rows={4}
                             maxLength={500}
                             required
                         />
                     </div>
                     
-                    <div className="add-suggestion-form-group">
-                        <label className="add-suggestion-label" htmlFor="image">Image (optional):</label>
+                    <div className="add-suggestion-form-group-compact">
+                        <label className="add-suggestion-label-compact" htmlFor="image">Image (optional):</label>
                         <input
-                            className="add-suggestion-file-input"
+                            className="add-suggestion-file-input-compact"
                             type="file"
                             id="image"
                             name="image"
@@ -195,16 +193,16 @@ function AddSuggestion() {
                             accept="image/*"
                         />
                         {imagePreview && (
-                            <div className="add-suggestion-image-preview">
-                                <img className="add-suggestion-preview-image" src={imagePreview} alt="Preview" />
+                            <div className="add-suggestion-image-preview-compact">
+                                <img className="add-suggestion-preview-image-compact" src={imagePreview} alt="Preview" />
                             </div>
                         )}
                     </div>
                     
-                    <div className="add-suggestion-form-actions">
+                    <div className="add-suggestion-form-actions-compact">
                         <button 
                             type="button" 
-                            className="add-suggestion-cancel-button" 
+                            className="add-suggestion-button add-suggestion-cancel-button-compact" 
                             onClick={handleCancel}
                             disabled={loading}
                         >
@@ -212,7 +210,7 @@ function AddSuggestion() {
                         </button>
                         <button 
                             type="submit" 
-                            className="add-suggestion-submit-button" 
+                            className="add-suggestion-button add-suggestion-submit-button-compact" 
                             disabled={loading}
                         >
                             {loading ? 'Creating...' : 'Create Suggestion'}
