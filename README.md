@@ -90,7 +90,7 @@ Wybór technologii dokonany na podstawie ciekawości ich działania i trendów.
    ./gradlew build\
    ./gradlew bootRun\
    Backend będzie dostępny pod adresem: `http://localhost:8080`\
-   Swagger UI: `http://localhost:8080/swagger-ui.html`
+   Swagger UI: `http://localhost:8080/api/docs`
 
 ### Uruchomienie Frontendu
    cd react-app\
