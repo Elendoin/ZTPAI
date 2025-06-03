@@ -71,7 +71,8 @@
 }
 
 .user-info {
-    /* Container for user information */
+    display: flex;
+    flex-direction: column;
 }
 
 .user-id {
@@ -80,7 +81,7 @@
 }
 
 .user-email {
-    /* Default styling, inherits from login-text */
+    color: inherit;
 }
 
 /* Action buttons container */
@@ -121,8 +122,102 @@
     justify-content: center;
 }
 
+/* Compact UserDetail styling for better screen fit */
+.user-detail-container {
+    height: 95vh;
+    width: 70%;
+    max-width: 800px;
+    padding: 1em;
+}
+
+.user-detail-loading-container,
+.user-detail-error-container {
+    height: 60vh;
+    width: 70%;
+    max-width: 600px;
+}
+
+.user-detail-header-compact {
+    margin-bottom: 1em;
+}
+
+.user-detail-title-compact {
+    font-size: 1.4em;
+    margin: 0;
+}
+
+.user-detail-logout-compact {
+    width: 120px;
+    height: 40px;
+    font-size: 14px;
+    padding: 0.5em;
+}
+
+.user-detail-card-compact {
+    padding: 1em;
+    margin-bottom: 0.75em;
+}
+
+.user-detail-section-title-compact {
+    font-size: 1.1em;
+    margin-bottom: 0.75em;
+}
+
+.user-detail-field-compact {
+    margin-bottom: 0.4em;
+    font-size: 0.9em;
+}
+
+.user-detail-role-badge {
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 0.8em;
+}
+
+.user-detail-role-admin {
+    color: #e74c3c;
+    background-color: #ffeaa7;
+}
+
+.user-detail-role-user {
+    color: #27ae60;
+    background-color: #dff0d8;
+}
+
+.user-detail-navigation-compact {
+    margin-top: 1em;
+}
+
+.user-detail-navigation-buttons-compact {
+    display: flex;
+    gap: 0.6em;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.user-detail-button-large {
+    width: 140px;
+    height: 45px;
+    font-size: 14px;
+}
+
+.user-detail-button-small {
+    width: 100px;
+    height: 45px;
+    font-size: 14px;
+}
+
+.user-detail-loading-compact {
+    font-size: 1.2em;
+}
+
+.user-detail-error-compact {
+    font-size: 0.9em;
+}
+
 .user-navigation-button {
-    /* Uses existing button classes, no additional styling needed */
+    display: inline-block;
 }
 
 /* Flex utilities for user management */
@@ -141,4 +236,129 @@
 .user-flex-gap {
     display: flex;
     gap: 1em;
+}
+
+/* Compact UsersList styling for better screen fit */
+.user-list-container-compact {
+    height: 95vh;
+    width: 70%;
+    max-width: 800px;
+    padding: 1em;
+}
+
+.user-list-loading-container {
+    height: 60vh;
+    width: 70%;
+    max-width: 600px;
+}
+
+.user-list-header-compact {
+    margin-bottom: 1em;
+}
+
+.user-list-title-compact {
+    font-size: 1.4em;
+    margin: 0;
+}
+
+.user-list-logout-compact {
+    width: 120px;
+    height: 40px;
+    font-size: 14px;
+    padding: 0.5em;
+}
+
+.user-list-card-compact {
+    padding: 1em;
+    margin-bottom: 0.75em;
+}
+
+.user-list-item-content-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1em;
+}
+
+.user-list-info-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+}
+
+.user-list-field-compact {
+    font-size: 0.9em;
+    margin-bottom: 0.2em;
+}
+
+.user-list-id-compact {
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.user-list-email-compact {
+    font-size: 0.9em;
+}
+
+.user-list-role-compact {
+    font-size: 0.9em;
+}
+
+.user-list-role-badge {
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 0.8em;
+}
+
+.user-list-role-admin {
+    color: #e74c3c;
+    background-color: #ffeaa7;
+}
+
+.user-list-role-user {
+    color: #27ae60;
+    background-color: #dff0d8;
+}
+
+.user-list-actions-compact {
+    display: flex;
+    gap: 0.5em;
+    flex-direction: column;
+}
+
+.user-list-button-compact {
+    width: 120px;
+    height: 40px;
+    font-size: 13px;
+    padding: 0.4em;
+}
+
+.user-list-navigation-compact {
+    margin-top: 1em;
+}
+
+.user-list-loading-compact {
+    font-size: 1.2em;
+}
+
+.user-list-empty-compact {
+    font-size: 1em;
+    margin: 1.5em 0;
+}
+
+.user-list-error-compact {
+    font-size: 0.9em;
+}
+
+.user-list-button-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #ccc;
+}
+
+.user-detail-button-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #ccc;
 }

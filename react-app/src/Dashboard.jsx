@@ -14,9 +14,7 @@ function Dashboard() {
 
     const checkAuthStatus = async () => {
         try {
-            const response = await authAPI.getStatus();
-            if (response.success) {
-                // Store user data including role
+            const response = await authAPI.getStatus();            if (response.success) {
                 const userData = {
                     userId: response.userId,
                     email: response.email,
@@ -33,13 +31,10 @@ function Dashboard() {
             setLoading(false);
         }
     };    const handleLogout = async () => {
-        try {
-            await authAPI.logout();
-            localStorage.removeItem('user'); // Clear stored user data
-            navigate('/login');
-        } catch (error) {
+        try {            await authAPI.logout();
+            localStorage.removeItem('user');
+            navigate('/login');        } catch (error) {
             console.error('Logout failed:', error);
-            // Even if logout fails, clear storage and redirect to login
             localStorage.removeItem('user');
             navigate('/login');
         }

@@ -18,18 +18,14 @@ function Register() {
     const handleChange = (e) => {
         setFormData({
             ...formData,
-            [e.target.name]: e.target.value
-        });
-        // Clear error when user starts typing
+            [e.target.name]: e.target.value        });
         if (error) setError('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError('');
+        setLoading(true);        setError('');
 
-        // Validate form
         if (!formData.email || !formData.password || !formData.name || !formData.surname) {
             setError('All fields are required');
             setLoading(false);
@@ -54,11 +50,8 @@ function Register() {
                 password: formData.password,
                 name: formData.name,
                 surname: formData.surname
-            });
-
-            if (response.success) {
-                // Registration successful, redirect to login
-                navigate('/login', { 
+            });            if (response.success) {
+                navigate('/login', {
                     state: { message: 'Registration successful! Please log in.' }
                 });
             } else {

@@ -35,17 +35,13 @@ public class AuthService {
         if (userRepository.findByEmail(registerRequest.getEmail()) != null) {
             throw new Exception("Email already exists");
         }        User user = new User();
-        user.setEmail(registerRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        user.setRole(Role.USER); // Default role for new users
+        user.setEmail(registerRequest.getEmail());        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setRole(Role.USER);
 
-        // Create user details
         UserDetailsEntity userDetails = new UserDetailsEntity();
         userDetails.setName(registerRequest.getName());
-        userDetails.setSurname(registerRequest.getSurname());
-        user.setUserDetailsEntity(userDetails);
+        userDetails.setSurname(registerRequest.getSurname());        user.setUserDetailsEntity(userDetails);
 
-        // Create user stats
         UserStats userStats = new UserStats();
         user.setUserStats(userStats);
 

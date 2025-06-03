@@ -34,10 +34,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String token = null;
-        String username = null;
+        String token = null;        String username = null;
 
-        // Extract JWT from cookie
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
             for (Cookie cookie : cookies) {
@@ -45,23 +43,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     token = cookie.getValue();
                     break;
                 }
-            }
-        }
+            }        }
 
-        // If token found, extract username
         if (token != null) {
             try {
                 username = jwtService.extractUsername(token);
             } catch (Exception e) {
                 logger.error("Cannot extract username from JWT token", e);
-            }
-        }
+            }        }
 
-        // If username is found and no authentication is set
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            // Validate token
             if (jwtService.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = 
                     new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

@@ -10,11 +10,9 @@ function Login() {
     });
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
-    const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);    const navigate = useNavigate();
     const location = useLocation();
 
-    // Check for registration success message
     useEffect(() => {
         if (location.state?.message) {
             setMessage(location.state.message);
@@ -26,7 +24,6 @@ function Login() {
             ...formData,
             [e.target.name]: e.target.value
         });
-        // Clear error when user starts typing
         if (error) setError('');
     };
 
@@ -36,7 +33,6 @@ function Login() {
         setError('');
         setMessage('');
 
-        // Validate form
         if (!formData.email || !formData.password) {
             setError('Email and password are required');
             setLoading(false);
@@ -45,18 +41,14 @@ function Login() {
             const response = await authAPI.login({
                 email: formData.email,
                 password: formData.password
-            });
-
-            if (response.success) {
-                // Store user data in localStorage for role-based access
+            });            if (response.success) {
                 localStorage.setItem('user', JSON.stringify({
                     userId: response.userId,
                     email: response.email,
                     role: response.role
                 }));
                 
-                // Login successful, redirect to dashboard or home
-                navigate('/dashboard'); // You can change this to your desired route
+                navigate('/daily-quiz');
             } else {
                 setError(response.message || 'Login failed');
             }

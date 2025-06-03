@@ -24,7 +24,6 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
 
     const initializePage = async () => {
         try {
-            // Get user from localStorage
             const userData = JSON.parse(localStorage.getItem('user'));
             if (!userData) {
                 navigate('/login');
@@ -32,10 +31,8 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
             }
             setUser(userData);
 
-            // Fetch today's question
             await fetchTodaysQuestion();
             
-            // Check if user has answered today and get stats
             await checkUserAnswerStatus(userData.userId);
             
         } catch (error) {
@@ -47,8 +44,7 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
         try {
             const response = await fetch('/api/questions/today');
             if (response.ok) {
-                const questionData = await response.json();
-                setQuestion(questionData);
+                const questionData = await response.json();                setQuestion(questionData);
             } else {
                 console.error('No question found for today');
             }
@@ -61,7 +57,6 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
             if (response.ok) {
                 const questionData = await response.json();
                 setQuestion(questionData);
-                // Don't set selectedAnswer here - we just want to show the correct answer highlighted
             } else {
                 console.error('No question found for today');
             }
@@ -70,33 +65,26 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
         }
     };const checkUserAnswerStatus = async (userId) => {
         try {
-            // Get user stats to check last_answered date
             const response = await fetch(`/api/users/${userId}`);
             if (response.ok) {
                 const userData = await response.json();
                 if (userData.userStats) {
-                    setUserStats(userData.userStats);                    // Check if last_answered is today
-                    // Use local date instead of UTC to match server timezone
-                    const today = new Date();
+                    setUserStats(userData.userStats);                    const today = new Date();
                     const todayLocal = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
                     const lastAnswered = userData.userStats.lastAnswered;
                     
                     console.log('Debug - Today (Local):', todayLocal);
                     console.log('Debug - Last answered (from API):', lastAnswered);
                     
-                    // Convert lastAnswered from DD-MM-YYYY to YYYY-MM-DD format for comparison
                     let isToday = false;
                     if (lastAnswered) {
                         if (lastAnswered.includes('-')) {
-                            // Check if it's in DD-MM-YYYY format or YYYY-MM-DD format
                             const parts = lastAnswered.split('-');
                             if (parts[0].length === 2) {
-                                // DD-MM-YYYY format, convert to YYYY-MM-DD
                                 const convertedDate = `${parts[2]}-${parts[1]}-${parts[0]}`;
                                 console.log('Debug - Converted date:', convertedDate);
                                 isToday = convertedDate === todayLocal;
                             } else {
-                                // Already in YYYY-MM-DD format
                                 isToday = lastAnswered === todayLocal;
                             }
                         }
@@ -106,17 +94,11 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
                       if (isToday) {
                         setHasAnsweredToday(true);
                         setShowResult(true);
-                        // Store the user's previous answer
                         setUserPreviousAnswer(userData.userStats.latestAnswer);
-                        // If user has already answered, we need to show the correct answer
-                        // We'll fetch it separately since the regular endpoint doesn't include it
                         await fetchTodaysQuestionWithAnswer();
-                          // Check their previous answer status using answered-today endpoint
-                        const answerResponse = await fetch(`/api/users/${userId}/answered-today`);
+                          const answerResponse = await fetch(`/api/users/${userId}/answered-today`);
                         if (answerResponse.ok) {
                             const answerData = await answerResponse.json();
-                            // We can't determine if they were correct from just the hasAnsweredToday flag
-                            // But we can show them they already answered and show the correct answer
                         }
                     }
                 }
@@ -125,15 +107,11 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
             console.error('Error checking user answer status:', error);
         }
     };const handleAnswerSelect = async (optionNumber) => {
-        if (hasAnsweredToday || !question) return;
+        if (hasAnsweredToday || !question) return;        setSelectedAnswer(optionNumber);
 
-        setSelectedAnswer(optionNumber);
-
-        // Convert option number to letter (1=A, 2=B, 3=C, 4=D)
-        const optionLetter = String.fromCharCode(64 + optionNumber); // 65 is 'A', so 64 + 1 = 'A'
+        const optionLetter = String.fromCharCode(64 + optionNumber);
 
         try {
-            // Check if answer is correct
             const response = await fetch(`/api/questions/${question.id}/check`, {
                 method: 'POST',
                 headers: {
@@ -146,10 +124,8 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
                 setShowResult(true);
                 setHasAnsweredToday(true);
                 
-                // Fetch the question with correct answer so we can display it if they got it wrong
                 await fetchTodaysQuestionWithAnswer();
                 
-                // Update user stats
                 await updateUserStats(result.correct, optionLetter);
             }
         } catch (error) {
@@ -159,12 +135,11 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
         try {
             const userData = JSON.parse(localStorage.getItem('user'));
             
-            // Update user stats via API
             const response = await fetch(`/api/users/${userData.userId}/answer`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}` // if you're using JWT
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
                 },
                 body: JSON.stringify({ 
                     correct: correct,
@@ -191,9 +166,7 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
         if (dateTimeElement) {
             dateTimeElement.textContent = timeString;
         }
-    };
-
-    const handleLogout = async () => {
+    };    const handleLogout = async () => {
         try {
             await authAPI.logout();
             localStorage.removeItem('user');
@@ -203,34 +176,33 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
             localStorage.removeItem('user');
             navigate('/login');
         }
-    };    const toggleStats = () => {
+    };
+
+    const handleProfileClick = () => {
+        if (user?.userId) {
+            navigate(`/users/${user.userId}`);
+        }
+    };const toggleStats = () => {
         setShowStats(!showStats);
-    };    // Helper function to determine button class
-    const getButtonClass = (optionLetter, optionNumber) => {
+    };    const getButtonClass = (optionLetter, optionNumber) => {
         if (!showResult) {
-            return ''; // No special class if no result to show
+            return '';
         }
         
-        // If the user has already answered today (returning visitor)
         if (hasAnsweredToday && !selectedAnswer) {
-            // Show the correct answer in green
             if (question.correctAnswer === optionLetter) {
                 return 'correct';
             }
-            // Show the user's previous answer in red if it was wrong
             if (userPreviousAnswer === optionLetter && userPreviousAnswer !== question.correctAnswer) {
                 return 'incorrect';
             }
             return '';
         }
         
-        // If the user just answered (fresh answer)
         if (selectedAnswer) {
             if (selectedAnswer === optionNumber) {
-                // This is the button they clicked
                 return isCorrect ? 'correct' : 'incorrect';
             } else if (question.correctAnswer === optionLetter) {
-                // Show the correct answer even if they got it wrong
                 return 'correct';
             }
         }
@@ -251,17 +223,15 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
             <nav>
                 <div className="left-nav-content">
                     <i className="fa-solid fa-house"></i>
-                    <i className="fa-solid fa-chart-simple" id="stats-button" onClick={toggleStats}></i>
                     <i className="fa-solid fa-lightbulb"></i>
                 </div>
                 <img src="/img/text_logo.svg" className="logo" alt="Popdle Logo" />
                 <div className="right-nav-content">
                     <p id="datetime"></p>
                     <div id="popup" className="popup">
-                        <p className="logout-text">Logged in as: <strong>{user?.email}</strong></p>
-                        <button className="logout-button" onClick={handleLogout}>Log Out</button>
+                        <p className="logout-text">Logged in as: <strong>{user?.email}</strong></p>                        <button className="logout-button" onClick={handleLogout}>Log Out</button>
                     </div>
-                    <i className="fa-solid fa-user" id="profile-button"></i>
+                    <i className="fa-solid fa-user" id="profile-button" onClick={handleProfileClick}></i>
                 </div>
             </nav>
             
@@ -313,7 +283,6 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
                                 </button>
                             </form>                            {showResult && (
                                 <div className="result-message">                                    {hasAnsweredToday && !selectedAnswer ? (
-                                        // User is returning after already answering today
                                         <>
                                             {userPreviousAnswer && (
                                                 <p style={{ color: 'white', fontSize: '0.9em', margin: '5px 0' }}>
@@ -327,16 +296,15 @@ function DailyQuiz() {    const [user, setUser] = useState(null);
                                                 The correct answer was: <span style={{ color: 'green', fontWeight: 'bold' }}>{question.correctAnswer}</span>
                                             </p>
                                             {userPreviousAnswer === question.correctAnswer ? (
-                                                <p style={{ color: 'green', fontSize: '0.9em', fontWeight: 'bold', margin: '5px 0' }}>✅ You got it right!</p>
+                                                <p style={{ color: 'green', fontSize: '0.9em', fontWeight: 'bold', margin: '5px 0' }}>You got it right!</p>
                                             ) : (
-                                                <p style={{ color: 'red', fontSize: '0.9em', fontWeight: 'bold', margin: '5px 0' }}>❌ You got it wrong this time.</p>
+                                                <p style={{ color: 'red', fontSize: '0.9em', fontWeight: 'bold', margin: '5px 0' }}>You got it wrong this time.</p>
                                             )}
                                             <p style={{ color: 'white', fontSize: '0.8em', margin: '5px 0' }}>
                                                 Come back tomorrow for the next question!
                                             </p>
                                         </>
                                     ) : (
-                                        // User just answered
                                         <>
                                             {isCorrect ? 
                                                 <p style={{ color: 'green', fontSize: '1.2em', fontWeight: 'bold' }}>✅ Correct!</p> : 

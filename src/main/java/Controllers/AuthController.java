@@ -42,15 +42,12 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequest, 
                                                 HttpServletResponse response) {
-        try {
-            String token = authService.login(loginRequest);
+        try {            String token = authService.login(loginRequest);
             
-            // Create HTTP-only cookie
-            Cookie jwtCookie = new Cookie(jwtCookieName, token);
-            jwtCookie.setHttpOnly(true);
-            jwtCookie.setSecure(false); // Set to true in production with HTTPS
+            Cookie jwtCookie = new Cookie(jwtCookieName, token);            jwtCookie.setHttpOnly(true);
+            jwtCookie.setSecure(false);
             jwtCookie.setPath("/");
-            jwtCookie.setMaxAge((int) (jwtExpiration / 1000)); // Convert to seconds
+            jwtCookie.setMaxAge((int) (jwtExpiration / 1000));
               response.addCookie(jwtCookie);
             
             UserDTO userInfo = authService.getUserInfo(loginRequest.getEmail());
@@ -60,12 +57,9 @@ public class AuthController {
         }
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<AuthResponseDTO> logout(HttpServletResponse response) {
-        // Clear the JWT cookie
-        Cookie jwtCookie = new Cookie(jwtCookieName, null);
-        jwtCookie.setHttpOnly(true);
-        jwtCookie.setSecure(false); // Set to true in production with HTTPS
+    @PostMapping("/logout")    public ResponseEntity<AuthResponseDTO> logout(HttpServletResponse response) {
+        Cookie jwtCookie = new Cookie(jwtCookieName, null);        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(false);
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge(0);
         

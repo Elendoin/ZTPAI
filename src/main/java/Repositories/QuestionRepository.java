@@ -11,22 +11,12 @@ import java.util.Optional;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    List<Question> findAll();
-    Optional<Question> findById(Long id);
+    List<Question> findAll();    Optional<Question> findById(Long id);
+      List<Question> findByDate(LocalDate date);
+      List<Question> findByDateBetween(LocalDate startDate, LocalDate endDate);
+      List<Question> findAllByOrderByDateDesc();
     
-    // Find questions by date
-    List<Question> findByDate(LocalDate date);
+    @Query("SELECT q FROM Question q WHERE q.date = :date")    Optional<Question> findByDateExact(LocalDate date);
     
-    // Find questions between dates
-    List<Question> findByDateBetween(LocalDate startDate, LocalDate endDate);
-    
-    // Find questions ordered by date (newest first)
-    List<Question> findAllByOrderByDateDesc();
-    
-    // Find today's question
-    @Query("SELECT q FROM Question q WHERE q.date = :date")
-    Optional<Question> findByDateExact(LocalDate date);
-    
-    // Count total questions
     long count();
 }

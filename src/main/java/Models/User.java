@@ -49,10 +49,8 @@ public class User implements UserDetails {    @Id
 
     public User(String email, String password, Role role) {
         this.email = email;
-        this.password = password;        this.role = role;
-    }
+        this.password = password;        this.role = role;    }
     
-    // UserDetails implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role.getValue()));
@@ -80,10 +78,8 @@ public class User implements UserDetails {    @Id
 
     @Override
     public boolean isEnabled() {
-        return true;
-    }
+        return true;    }
 
-    // Getters and setters
     public Long getId() {
         return id;
     }

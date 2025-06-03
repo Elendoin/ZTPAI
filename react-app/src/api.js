@@ -1,15 +1,13 @@
 import axios from 'axios';
 
-// Create axios instance with default config
 const api = axios.create({
   baseURL: '/api',
-  withCredentials: true, // Include cookies in requests
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Auth API functions
 export const authAPI = {
   register: async (userData) => {
     try {
@@ -47,7 +45,6 @@ export const authAPI = {
     }  },
 };
 
-// User API functions
 export const userAPI = {
   getAllUsers: async () => {
     try {

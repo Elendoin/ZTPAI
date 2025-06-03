@@ -56,10 +56,8 @@ public class Question {
         this.optionC = optionC;
         this.optionD = optionD;
         this.date = date;
-        this.image = image;
-    }
+        this.image = image;    }
 
-    // Getters and setters
     public Long getId() {
         return id;
     }

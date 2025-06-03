@@ -25,11 +25,9 @@ public class QuestionDTO {
         this.optionC = optionC;
         this.optionD = optionD;
         this.date = date;
-        this.image = image;
-    }
+        this.image = image;    }
 
-    // Constructor without correct answer (for client-side to hide the answer)
-    public QuestionDTO(Long id, String contents, String optionA, String optionB, 
+    public QuestionDTO(Long id, String contents, String optionA, String optionB,
                       String optionC, String optionD, LocalDate date, String image) {
         this.id = id;
         this.contents = contents;
@@ -38,10 +36,8 @@ public class QuestionDTO {
         this.optionC = optionC;
         this.optionD = optionD;
         this.date = date;
-        this.image = image;
-    }
+        this.image = image;    }
 
-    // Getters and setters
     public Long getId() {
         return id;
     }

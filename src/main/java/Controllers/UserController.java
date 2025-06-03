@@ -52,10 +52,8 @@ public class UserController {
                 return ResponseEntity.badRequest().body("Missing 'correct' field");
             }
             if (userAnswer == null) {
-                return ResponseEntity.badRequest().body("Missing 'answer' field");
-            }
+                return ResponseEntity.badRequest().body("Missing 'answer' field");            }
 
-            // Check if user has already answered today
             if (userService.hasUserAnsweredToday(id)) {
                 return ResponseEntity.badRequest().body("User has already answered today");
             }

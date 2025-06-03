@@ -14,26 +14,20 @@ const UserDetail = () => {
 
   useEffect(() => {
     checkAuthAndFetchUser();
-  }, [id]);
-  const checkAuthAndFetchUser = async () => {
+  }, [id]);  const checkAuthAndFetchUser = async () => {
     try {
-      // Check if user is authenticated
       const authStatus = await authAPI.getStatus();
       if (!authStatus.success) {
         navigate('/login');
-        return;
-      }
+        return;      }
 
-      // Set current user info for role checking
       const userData = {
         userId: authStatus.userId,
         email: authStatus.email,
         role: authStatus.role
       };
-      setCurrentUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+      setCurrentUser(userData);      localStorage.setItem('user', JSON.stringify(userData));
 
-      // Fetch specific user
       const userDetail = await userAPI.getUserById(id);
       setUser(userDetail);
     } catch (error) {
@@ -42,19 +36,15 @@ const UserDetail = () => {
       setLoading(false);
     }
   };
-  const handleLogout = async () => {
-    try {
+  const handleLogout = async () => {    try {
       await authAPI.logout();
-      localStorage.removeItem('user'); // Clear stored user data
-      navigate('/login');
-    } catch (error) {
+      localStorage.removeItem('user');
+      navigate('/login');    } catch (error) {
       console.error('Logout failed:', error);
-      localStorage.removeItem('user'); // Clear storage anyway
+      localStorage.removeItem('user');
       navigate('/login');
     }
-  };
-  const handleDeleteUser = async () => {
-    // Check if current user is admin
+  };  const handleDeleteUser = async () => {
     if (currentUser?.role !== 'ADMIN') {
       setError('Only administrators can delete users');
       return;
@@ -71,27 +61,28 @@ const UserDetail = () => {
   };if (loading) {
     return (
       <div className="container">
-        <div className="login-container">
-          <div className="login-text user-loading">
+        <div className="login-container user-detail-loading-container">
+          <div className="login-text user-loading user-detail-loading-compact">
             Loading user details...
           </div>
         </div>
       </div>
     );
-  }
-  if (error) {
+  }if (error) {
     return (
       <div className="container">
-        <div className="login-container">
-          <h2 className="login-text user-title" style={{ marginBottom: '1em' }}>
+        <div className="login-container user-detail-error-container">
+          <h2 className="login-text user-title user-detail-title-compact" style={{ 
+            marginBottom: '1em'
+          }}>
             Error
           </h2>
-          <div className="user-error">
+          <div className="user-error user-detail-error-compact">
             {error}
           </div>
           <div className="user-navigation">
             <Link to="/users">
-              <button className="login-button">Back to Users List</button>
+              <button className="login-button user-detail-button-large">Back to Users List</button>
             </Link>
           </div>
         </div>
@@ -100,24 +91,24 @@ const UserDetail = () => {
   }
 
   return (    <div className="container">
-      <div className="login-container">        <div className="user-header">
-          <h2 className="login-text user-title">
+      <div className="login-container user-detail-container">        <div className="user-header user-detail-header-compact">
+          <h2 className="login-text user-title user-detail-title-compact">
             User Details
             {currentUser?.role === 'ADMIN' && (
               <span style={{ 
                 fontSize: '0.6em', 
                 color: '#e74c3c',
-                marginLeft: '10px',
+                marginLeft: '8px',
                 backgroundColor: '#ffeaa7',
-                padding: '2px 8px',
-                borderRadius: '12px'
+                padding: '2px 6px',
+                borderRadius: '8px'
               }}>
                 ADMIN VIEW
               </span>
             )}
           </h2>
           <button 
-            className="register-button user-logout-button" 
+            className="register-button user-logout-button user-detail-logout-compact" 
             onClick={handleLogout}
           >
             Logout
@@ -125,90 +116,74 @@ const UserDetail = () => {
         </div>
         
         {user && (
-          <div>
-            <div className="user-detail-card">
-              <h3 className="login-text user-detail-section-title">
+          <div>            <div className="user-detail-card user-detail-card-compact">
+              <h3 className="login-text user-detail-section-title user-detail-section-title-compact">
                 Basic Information
               </h3>
-              <div className="login-text user-detail-field">
+              <div className="login-text user-detail-field user-detail-field-compact">
                 <strong>ID:</strong> {user.id}
-              </div>              <div className="login-text user-detail-field">
+              </div>              <div className="login-text user-detail-field user-detail-field-compact">
                 <strong>Email:</strong> {user.email}
               </div>
-              <div className="login-text user-detail-field">
-                <strong>Role:</strong> <span style={{ 
-                  fontWeight: 'bold',
-                  color: user.role === 'ADMIN' ? '#e74c3c' : '#27ae60',
-                  backgroundColor: user.role === 'ADMIN' ? '#ffeaa7' : '#dff0d8',
-                  padding: '4px 8px',
-                  borderRadius: '8px',
-                  fontSize: '0.9em'
-                }}>
+              <div className="login-text user-detail-field user-detail-field-compact">
+                <strong>Role:</strong> <span className={`user-detail-role-badge ${
+                  user.role === 'ADMIN' ? 'user-detail-role-admin' : 'user-detail-role-user'
+                }`}>
                   {user.role || 'USER'}
                 </span>
               </div>
-            </div>
-
-            {user.userDetailsEntity && (
-              <div className="user-detail-card">
-                <h3 className="login-text user-detail-section-title">
+            </div>            {user.userDetailsEntity && (
+              <div className="user-detail-card user-detail-card-compact">
+                <h3 className="login-text user-detail-section-title user-detail-section-title-compact">
                   Personal Details
                 </h3>
-                <div className="login-text user-detail-field">
-                  <strong>First Name:</strong> {user.userDetailsEntity.firstName || 'Not provided'}
+                <div className="login-text user-detail-field user-detail-field-compact">
+                  <strong>First Name:</strong> {user.userDetailsEntity.name || 'Not provided'}
                 </div>
-                <div className="login-text user-detail-field">
-                  <strong>Last Name:</strong> {user.userDetailsEntity.lastName || 'Not provided'}
+                <div className="login-text user-detail-field user-detail-field-compact">
+                  <strong>Last Name:</strong> {user.userDetailsEntity.surname || 'Not provided'}
                 </div>
               </div>
-            )}
-
-            {user.userStats && (
-              <div className="user-detail-card">
-                <h3 className="login-text user-detail-section-title">
+            )}            {user.userStats && (
+              <div className="user-detail-card user-detail-card-compact">
+                <h3 className="login-text user-detail-section-title user-detail-section-title-compact">
                   Statistics
                 </h3>
-                <div className="login-text user-detail-field">
-                  <strong>Games Played:</strong> {user.userStats.gamesPlayed || 0}
+                <div className="login-text user-detail-field user-detail-field-compact">
+                  <strong>Games Played:</strong> {(user.userStats.wins || 0) + (user.userStats.losses || 0)}
                 </div>
-                <div className="login-text user-detail-field">
-                  <strong>Games Won:</strong> {user.userStats.gamesWon || 0}
+                <div className="login-text user-detail-field user-detail-field-compact">
+                  <strong>Games Won:</strong> {user.userStats.wins || 0}
                 </div>
-                <div className="login-text user-detail-field">
+                <div className="login-text user-detail-field user-detail-field-compact">
                   <strong>Win Percentage:</strong> {
-                    user.userStats.gamesPlayed > 0 
-                      ? Math.round((user.userStats.gamesWon / user.userStats.gamesPlayed) * 100) + '%'
+                    ((user.userStats.wins || 0) + (user.userStats.losses || 0)) > 0 
+                      ? Math.round(((user.userStats.wins || 0) / ((user.userStats.wins || 0) + (user.userStats.losses || 0))) * 100) + '%'
                       : '0%'
                   }
                 </div>
               </div>
-            )}
-
-            <div className="user-navigation">
-              <div className="user-navigation-buttons">
+            )}<div className="user-navigation user-detail-navigation-compact">              <div className="user-navigation-buttons user-detail-navigation-buttons-compact">
+                <Link to="/daily-quiz">
+                  <button className="login-button user-detail-button-large">Back to Daily Quiz</button>
+                </Link>
                 <Link to="/users">
-                  <button className="login-button">Back to Users List</button>
+                  <button className="login-button user-detail-button-large">Back to Users List</button>
                 </Link>                <Link to="/dashboard">
-                  <button className="login-button">Dashboard</button>
+                  <button className="login-button user-detail-button-small">Dashboard</button>
                 </Link>
                 {currentUser?.role === 'ADMIN' && (
                   <button 
                     onClick={handleDeleteUser}
-                    className="register-button user-delete-button"
+                    className="register-button user-delete-button user-detail-button-small"
                     title="Only admins can delete users"
                   >
                     Delete User
                   </button>
-                )}
-                {currentUser?.role !== 'ADMIN' && (
+                )}                {currentUser?.role !== 'ADMIN' && (
                   <button 
-                    className="register-button user-delete-button"
+                    className="register-button user-delete-button user-detail-button-small user-detail-button-disabled"
                     disabled
-                    style={{ 
-                      opacity: 0.5, 
-                      cursor: 'not-allowed',
-                      backgroundColor: '#ccc'
-                    }}
                     title="Only admins can delete users"
                   >
                     Delete User

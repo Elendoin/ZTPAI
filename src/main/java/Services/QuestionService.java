@@ -99,10 +99,8 @@ public class QuestionService {
         if (question.isEmpty()) {
             return false;
         }
-        return question.get().getCorrectAnswer().equalsIgnoreCase(userAnswer.trim());
-    }
+        return question.get().getCorrectAnswer().equalsIgnoreCase(userAnswer.trim());    }
 
-    // Helper methods for conversion
     private QuestionDTO convertToDTO(Question question) {
         return new QuestionDTO(
                 question.getId(),

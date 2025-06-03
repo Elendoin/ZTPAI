@@ -37,17 +37,13 @@ public class UserService {
         UserStats stats = user.getUserStats();
         if (stats == null) {
             stats = new UserStats();
-            user.setUserStats(stats);
-        }
+            user.setUserStats(stats);        }
 
-        // Update stats based on correct/incorrect answer
         if (isCorrect) {
             stats.setWins(stats.getWins() + 1);
         } else {
-            stats.setLosses(stats.getLosses() + 1);
-        }
+            stats.setLosses(stats.getLosses() + 1);        }
 
-        // Store the user's answer and set last answered to today
         stats.setLatestAnswer(userAnswer);
         stats.setLastAnswered(LocalDate.now());
 

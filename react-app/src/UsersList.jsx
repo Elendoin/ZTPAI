@@ -15,23 +15,18 @@ const UsersList = () => {
         checkAuthAndFetchUsers();
     }, []);    const checkAuthAndFetchUsers = async () => {
         try {
-            // Check if user is authenticated
             const authStatus = await authAPI.getStatus();
             if (!authStatus.success) {
                 navigate('/login');
-                return;
-            }
+                return;            }
 
-            // Set current user info for role checking
             const userData = {
                 userId: authStatus.userId,
                 email: authStatus.email,
                 role: authStatus.role
             };
-            setCurrentUser(userData);
-            localStorage.setItem('user', JSON.stringify(userData));
+            setCurrentUser(userData);            localStorage.setItem('user', JSON.stringify(userData));
 
-            // Fetch users
             const usersData = await userAPI.getAllUsers();
             setUsers(usersData);
         } catch (error) {
@@ -40,7 +35,6 @@ const UsersList = () => {
             setLoading(false);
         }
     };    const handleDeleteUser = async (userId) => {
-        // Check if current user is admin
         if (currentUser?.role !== 'ADMIN') {
             setError('Only administrators can delete users');
             return;
@@ -48,31 +42,26 @@ const UsersList = () => {
 
         if (!window.confirm('Are you sure you want to delete this user?')) {
             return;
-        }
-
-        try {
+        }        try {
             await userAPI.deleteUser(userId);
-            // Refresh the users list after deletion
             setUsers(users.filter(user => user.id !== userId));
-            setError(''); // Clear any previous errors
+            setError('');
         } catch (error) {
             setError(error.message || 'Failed to delete user');
         }
-    };    const handleLogout = async () => {
-        try {
+    };    const handleLogout = async () => {        try {
             await authAPI.logout();
-            localStorage.removeItem('user'); // Clear stored user data
-            navigate('/login');
-        } catch (error) {
+            localStorage.removeItem('user');
+            navigate('/login');        } catch (error) {
             console.error('Logout failed:', error);
-            localStorage.removeItem('user'); // Clear storage anyway
-            navigate('/login'); // Navigate anyway
+            localStorage.removeItem('user');
+            navigate('/login');
         }
     };if (loading) {
         return (
             <div className="container">
-                <div className="login-container">
-                    <div className="login-text user-loading">
+                <div className="login-container user-list-loading-container">
+                    <div className="login-text user-loading user-list-loading-compact">
                         Loading users...
                     </div>
                 </div>
@@ -81,87 +70,71 @@ const UsersList = () => {
     }
 
     return (        <div className="container">
-            <div className="login-container">                <div className="user-header">
-                    <h2 className="login-text user-title">
+            <div className="login-container user-list-container-compact">                <div className="user-header user-list-header-compact">
+                    <h2 className="login-text user-title user-list-title-compact">
                         Users List
                         {currentUser?.role === 'ADMIN' && (
                             <span style={{ 
                                 fontSize: '0.6em', 
                                 color: '#e74c3c',
-                                marginLeft: '10px',
+                                marginLeft: '8px',
                                 backgroundColor: '#ffeaa7',
-                                padding: '2px 8px',
-                                borderRadius: '12px'
+                                padding: '2px 6px',
+                                borderRadius: '8px'
                             }}>
                                 ADMIN VIEW
                             </span>
                         )}
                     </h2>
                     <button 
-                        className="register-button user-logout-button" 
+                        className="register-button user-logout-button user-list-logout-compact" 
                         onClick={handleLogout}
                     >
                         Logout
                     </button>
-                </div>
-
-                {error && (
-                    <div className="user-error">
+                </div>                {error && (
+                    <div className="user-error user-list-error-compact">
                         {error}
                     </div>
-                )}
-
-                {users.length === 0 ? (
-                    <div className="login-text user-empty-message">
+                )}                {users.length === 0 ? (
+                    <div className="login-text user-empty-message user-list-empty-compact">
                         No users found.
                     </div>
-                ) : (
-                    <div className="user-list-container">
+                ) : (                    <div className="user-list-container">
                         {users.map(user => (
-                            <div key={user.id} className="user-card">
-                                <div className="user-item-content">                                    <div className="user-info">
-                                        <div className="login-text user-id">
+                            <div key={user.id} className="user-card user-list-card-compact">
+                                <div className="user-item-content user-list-item-content-compact">                                    <div className="user-info user-list-info-compact">
+                                        <div className="login-text user-id user-list-id-compact">
                                             ID: {user.id}
                                         </div>
-                                        <div className="login-text user-email">
+                                        <div className="login-text user-email user-list-email-compact">
                                             Email: {user.email}
                                         </div>
-                                        <div className="login-text user-role">
-                                            Role: <span style={{ 
-                                                fontWeight: 'bold',
-                                                color: user.role === 'ADMIN' ? '#e74c3c' : '#27ae60',
-                                                backgroundColor: user.role === 'ADMIN' ? '#ffeaa7' : '#dff0d8',
-                                                padding: '2px 6px',
-                                                borderRadius: '8px',
-                                                fontSize: '0.85em'
-                                            }}>
+                                        <div className="login-text user-role user-list-role-compact">
+                                            Role: <span className={`user-list-role-badge ${
+                                                user.role === 'ADMIN' ? 'user-list-role-admin' : 'user-list-role-user'
+                                            }`}>
                                                 {user.role || 'USER'}
                                             </span>
                                         </div>
-                                    </div>                                    <div className="user-actions">
+                                    </div>                                    <div className="user-actions user-list-actions-compact">
                                         <Link to={`/users/${user.id}`}>
-                                            <button className="login-button user-action-button">
+                                            <button className="login-button user-action-button user-list-button-compact">
                                                 View Details
                                             </button>
                                         </Link>
                                         {currentUser?.role === 'ADMIN' && (
                                             <button 
-                                                className="register-button user-delete-button" 
+                                                className="register-button user-delete-button user-list-button-compact" 
                                                 onClick={() => handleDeleteUser(user.id)}
                                                 title="Only admins can delete users"
                                             >
                                                 Delete
                                             </button>
-                                        )}
-                                        {currentUser?.role !== 'ADMIN' && (
+                                        )}                                        {currentUser?.role !== 'ADMIN' && (
                                             <button 
-                                                className="register-button user-delete-button"
+                                                className="register-button user-delete-button user-list-button-compact user-list-button-disabled"
                                                 disabled
-                                                style={{ 
-                                                    opacity: 0.5, 
-                                                    cursor: 'not-allowed',
-                                                    backgroundColor: '#ccc'
-                                                }}
                                                 title="Only admins can delete users"
                                             >
                                                 Delete
@@ -172,11 +145,9 @@ const UsersList = () => {
                             </div>
                         ))}
                     </div>
-                )}
-
-                <div className="user-navigation">
+                )}                <div className="user-navigation user-list-navigation-compact">
                     <Link to="/dashboard">
-                        <button className="login-button">
+                        <button className="login-button user-list-button-compact">
                             Back to Dashboard
                         </button>
                     </Link>
